@@ -40,4 +40,11 @@ class Pedido extends Model
 		// 1 pedido pertenece a un usuario
 		return $this->belongsTo('App\User', 'usuario_id');
 	}
+
+    // Relación de pedidos con productos:
+    public function productos(){
+        // 1 pedido contiene muchos productos
+        return $this->belongsToMany('\App\Producto','pedido_productos','pedido_id','producto_id')
+            ->withPivot('cantidad','precio')->withTimestamps(); 
+    }
 }

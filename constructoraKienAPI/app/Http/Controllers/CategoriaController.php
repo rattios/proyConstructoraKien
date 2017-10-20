@@ -27,10 +27,10 @@ class CategoriaController extends Controller
         
     }
 
-    public function categoriasSubcategorias()
+    public function categoriasProductos()
     {
         //cargar todas las cat con sus subcat
-        $categorias = \App\Categoria::with('subcategorias')->get();
+        $categorias = \App\Categoria::with('productos')->get();
 
         if(count($categorias) == 0){
             return response()->json(['error'=>'No existen categorías.'], 404);          
@@ -113,7 +113,7 @@ class CategoriaController extends Controller
         } 
     }
 
-    public function categoriaSubcategorias($id)
+    public function categoriaProductos($id)
     {
 
         //cargar una cat con sus subcat
@@ -125,7 +125,7 @@ class CategoriaController extends Controller
 
             //cargar las subcat de la cat
             //$categoria = $categoria->with('subcategorias')->get();
-            $categoria->subcategorias = $categoria->subcategorias()->get();
+            $categoria->productos = $categoria->productos()->get();
             //$categoria = $categoria->subcategorias;
 
             return response()->json(['status'=>'ok', 'categoria'=>$categoria], 200);
@@ -226,10 +226,9 @@ class CategoriaController extends Controller
             return response()->json(['error'=>'No existe la categoría con id '.$id], 404);
         }
        
-        $subcategorias = $categoria->subcategorias;
-        $pedidos = $categoria->pedidos;
+        $productos = $categoria->productos;
 
-        if (sizeof($subcategorias) > 0 || sizeof($pedidos) > 0)
+        if (sizeof($productos) > 0)
         {
             // Devolvemos un código 409 Conflict. 
             return response()->json(['error'=>'Esta categoría posee relaciones y no puede ser eliminada.'], 409);

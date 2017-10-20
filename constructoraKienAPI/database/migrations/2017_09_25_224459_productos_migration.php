@@ -18,7 +18,7 @@ class ProductosMigration extends Migration
             $table->string('imagen');
             $table->float('costo'); //Costo por unidad
             $table->float('cantidad'); //Total de unidades
-            $table->float('unidad'); //Kg por ejemplo
+            $table->string('unidad'); //Kg por ejemplo
 
             $table->integer('categoria_id')->unsigned();
             $table->foreign('categoria_id')->references('id')->on('categorias');

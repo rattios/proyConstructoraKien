@@ -13,6 +13,28 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class LoginController extends Controller
 {
 
+    /*Funcion para verificar la valides de un token que se pasa en el request*/
+    public function validarToken(Request $request)
+    {
+
+        try {
+            $user = JWTAuth::toUser($request->input('token'));
+        } catch (Exception $e) {
+            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
+                return 0;
+            }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
+                return 0;
+            }else if ($e instanceof \Tymon\JWTAuth\Exceptions\JWTException){
+                return 0;
+            }else{
+                return 0;
+            }
+        }
+
+        return 1;
+    }
+    
+
     public function loginWeb(Request $request)
     {
         $credentials = $request->only('user', 'password');
@@ -34,15 +56,6 @@ class LoginController extends Controller
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Password inválido'], 401);
             }
-
-            /*$auxPassword = Hash::make($request->input('password'));
-            if ($auxPassword == $user->password) {
-                $token = JWTAuth::fromUser($user);
-            }
-            else{
-                return response()->json(['error' => 'Password inválido'], 401);
-            }*/ 
-            
 
             $user = JWTAuth::toUser($token);
             
@@ -81,15 +94,6 @@ class LoginController extends Controller
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Password inválido'], 401);
             }
-
-            /*$auxPassword = Hash::make($request->input('password'));
-            if ($auxPassword == $user->password) {
-                $token = JWTAuth::fromUser($user);
-            }
-            else{
-                return response()->json(['error' => 'Password inválido'], 401);
-            }*/ 
-            
 
             $user = JWTAuth::toUser($token);
             

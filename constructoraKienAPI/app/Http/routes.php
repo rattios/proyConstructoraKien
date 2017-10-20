@@ -23,79 +23,50 @@ Route::group(  ['middleware' =>'cors'], function(){
 
     //----Pruebas LoginController
     Route::post('/login/web','LoginController@loginWeb');
-    Route::post('/login/app','LoginController@loginApp'); 
+    Route::post('/login/app','LoginController@loginApp');
+    Route::post('/validar/token','LoginController@validarToken'); 
 
     //----Pruebas PasswordController
     Route::get('/password/cliente/{correo}','PasswordController@generarCodigo');
     Route::get('/password/codigo/{codigo}','PasswordController@validarCodigo');
      
     //Registro de clientes   
-    Route::post('/clientes','UsuarioController@storeCliente');
-    //Registro de socios
-    Route::post('/socios','SocioController@store');
-    Route::get('/categorias/subcategorias','CategoriaController@categoriasSubcategorias');
+    Route::post('/clientes','UsuarioController@storeCliente'); //Crea clientes para la app
+    
 
         //----Pruebas UsuarioController
         Route::get('/usuarios','UsuarioController@index');
-        Route::get('/usuarios/pedidos','UsuarioController@usuariosPedidos');
-        Route::post('/usuarios','UsuarioController@store');
+        Route::get('/usuarios/pedidos','UsuarioController@usuariosClientesPedidos');
+        Route::post('/usuarios','UsuarioController@store'); //Crea admis para el panel
         Route::put('/usuarios/{id}','UsuarioController@update');
         Route::delete('/usuarios/{id}','UsuarioController@destroy');
         Route::get('/usuarios/{id}','UsuarioController@show');
         Route::get('/usuarios/{id}/pedidos','UsuarioController@usuarioPedidos');
 
-        //----Pruebas SocioController
-        Route::get('/socios','SocioController@index');
-        Route::get('/socios/servicios','SocioController@sociosServicios');
-        Route::get('/socios/pedidos','SocioController@sociosPedidos');
-        //Route::post('/socios','SocioController@store');
-        Route::put('/socios/{id}','SocioController@update');
-        Route::delete('/socios/{id}','SocioController@destroy');
-        Route::get('/socios/{id}','SocioController@show');
-        Route::get('/socios/{id}/servicios','SocioController@socioServicios');
-        Route::get('/socios/{id}/pedidos','SocioController@socioPedidos');
-
         //----Pruebas CategoriaController
         Route::get('/categorias','CategoriaController@index');
-        //Route::get('/categorias/subcategorias','CategoriaController@categoriasSubcategorias');
+        Route::get('/categorias/productos','CategoriaController@categoriasProductos');
         Route::post('/categorias','CategoriaController@store');
         Route::put('/categorias/{id}','CategoriaController@update');
         Route::delete('/categorias/{id}','CategoriaController@destroy');
         Route::get('/categorias/{id}','CategoriaController@show');
-        Route::get('/categorias/{id}/subcategorias','CategoriaController@categoriaSubcategorias');
+        Route::get('/categorias/{id}/productos','CategoriaController@categoriaProductos');
 
-        //----Pruebas SubcategoriaController
-        Route::get('/subcategorias','SubcategoriaController@index');
-        Route::post('/subcategorias','SubcategoriaController@store');
-        Route::put('/subcategorias/{id}','SubcategoriaController@update');
-        Route::delete('/subcategorias/{id}','SubcategoriaController@destroy');
-        Route::get('/subcategorias/{id}','SubcategoriaController@show');
-
-        //----Pruebas ServicioController
-        Route::get('/servicios','ServicioController@index');
-        Route::get('/servicios/socio','ServicioController@serviciosSocio');
-        Route::post('/servicios/{socio_id}','ServicioController@store');
-        Route::put('/servicios/{id}','ServicioController@update');
-        Route::delete('/servicios/{id}','ServicioController@destroy');
-        Route::get('/servicios/{id}','ServicioController@show');
-        Route::get('/servicios/{id}/socio','ServicioController@servicioSocio');
-        Route::get('/servicios/socio/subcategoria/{subcategoria_id}','ServicioController@serviciosSocioSubcat');
+        //----Pruebas ProductoController
+        Route::get('/productos','ProductoController@index');
+        Route::get('/productos/categoria','ProductoController@productosCategoria');
+        Route::post('/productos/{categoria_id}','ProductoController@store');
+        Route::put('/productos/{id}','ProductoController@update');
+        Route::delete('/productos/{id}','ProductoController@destroy');
+        Route::get('/productos/{id}','ProductoController@show');
+        Route::get('/productos/{id}/categoria','ProductoController@productoCategoria');
         
         //----Pruebas PedidoController
         Route::get('/pedidos','PedidoController@index');
-        Route::get('/pedidos/informacion','PedidoController@pedidosInformacion');
         Route::post('/pedidos','PedidoController@store');
         Route::put('/pedidos/{id}','PedidoController@update');
         Route::delete('/pedidos/{id}','PedidoController@destroy');
         Route::get('/pedidos/{id}','PedidoController@show');
-        Route::get('/pedidos/{id}/informacion','PedidoController@pedidoInformacion');
-
-        //----Pruebas CalificacionController
-        Route::get('/calificaciones','CalificacionController@index');
-        Route::post('/calificaciones/{pedido_id}','CalificacionController@store');
-        Route::put('/calificaciones/{pedido_id}','CalificacionController@update');
-        Route::delete('/calificaciones/{pedido_id}','CalificacionController@destroy');
-        Route::get('/calificaciones/{pedido_id}','CalificacionController@show');
 
     Route::group(['middleware' => 'jwt-auth'], function(){
 

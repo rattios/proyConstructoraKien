@@ -28,14 +28,14 @@ class UsuarioController extends Controller
         } 
     }
 
-    public function usuariosPedidos()
+    public function usuariosClientesPedidos()
     {
-        //cargar todos los usuarios con sus pedidos
+        //cargar todos los usuarios clientes con sus pedidos
         //$usuarios = \App\User::all();
-        $usuarios = \App\User::with('pedidos')->get();
+        $usuarios = \App\User::where('tipo',1)->with('pedidos')->get();
 
         if(count($usuarios) == 0){
-            return response()->json(['error'=>'No existen usuarios.'], 404);          
+            return response()->json(['error'=>'No existen usuarios clientes.'], 404);          
         }else{
             return response()->json(['status'=>'ok', 'usuarios'=>$usuarios], 200);
         } 
@@ -64,14 +64,13 @@ class UsuarioController extends Controller
         $password=$request->input('password'); 
         $correo=$request->input('correo'); 
         $nombre=$request->input('nombre');
-        $telefono=$request->input('telefono');
-        $sexo=$request->input('sexo');*/
+        $telefono=$request->input('telefono');*/
         $tipo=$request->input('tipo');
 
         // Primero comprobaremos si estamos recibiendo todos los campos.
         if ( !$request->input('user') || !$request->input('password') ||
             !$request->input('correo') || !$request->input('nombre') ||
-            !$request->input('telefono') || !$request->input('sexo') ||
+            !$request->input('telefono') || 
             $tipo == null || $tipo == '')
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
@@ -92,7 +91,6 @@ class UsuarioController extends Controller
         $usuario->correo = $request->input('correo');
         $usuario->nombre = $request->input('nombre');
         $usuario->telefono = $request->input('telefono');
-        $usuario->sexo = $request->input('sexo');
         $usuario->tipo = $request->input('tipo');
 
         if($usuario->save()){
@@ -115,7 +113,7 @@ class UsuarioController extends Controller
         // Primero comprobaremos si estamos recibiendo todos los campos.
         if ( !$request->input('user') || !$request->input('password') ||
             !$request->input('correo') || !$request->input('nombre') ||
-            !$request->input('telefono') || !$request->input('sexo') )
+            !$request->input('telefono') )
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
             return response()->json(['error'=>'Faltan datos necesarios para el proceso de alta.'],422);
@@ -135,7 +133,6 @@ class UsuarioController extends Controller
         $usuario->correo = $request->input('correo');
         $usuario->nombre = $request->input('nombre');
         $usuario->telefono = $request->input('telefono');
-        $usuario->sexo = $request->input('sexo');
         $usuario->tipo = 1;
 
         if($usuario->save()){
@@ -169,6 +166,7 @@ class UsuarioController extends Controller
     {
         //cargar un usuario
         $usuario = \App\User::find($id);
+        //$usuario = \App\User::where('id',$id)->with('pedidos')->get();
 
         if(count($usuario)==0){
             return response()->json(['error'=>'No existe el usuario con id '.$id], 404);          
@@ -216,7 +214,6 @@ class UsuarioController extends Controller
         $correo=$request->input('correo'); 
         $nombre=$request->input('nombre');
         $telefono=$request->input('telefono');
-        $sexo=$request->input('sexo');
         $tipo=$request->input('tipo');
 
         // Creamos una bandera para controlar si se ha modificado algún dato.
@@ -266,12 +263,6 @@ class UsuarioController extends Controller
         if ($telefono != null && $telefono!='')
         {
             $usuario->telefono = $telefono;
-            $bandera=true;
-        }
-
-        if ($sexo != null && $sexo!='')
-        {
-            $usuario->sexo = $sexo;
             $bandera=true;
         }
 

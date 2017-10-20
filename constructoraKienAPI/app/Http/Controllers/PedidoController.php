@@ -17,7 +17,7 @@ class PedidoController extends Controller
     public function index()
     {
         //cargar todos los pedidos
-        $pedidos = \App\Pedido::all();
+        $pedidos = \App\Pedido::with('productos')->get();
 
         if(count($pedidos) == 0){
             return response()->json(['error'=>'No existen pedidos.'], 404);          
@@ -26,19 +26,6 @@ class PedidoController extends Controller
         } 
     }
 
-    public function pedidosInformacion()
-    {
-        //cargar todos los pedidos con toda su informacion asociada
-        $pedidos = \App\Pedido::with('usuario')->with('servicio')
-                ->with('socio')->with('categoria')
-                ->with('subcategoria')->with('calificacion')->get();
-
-        if(count($pedidos) == 0){
-            return response()->json(['error'=>'No existen pedidos.'], 404);          
-        }else{
-            return response()->json(['status'=>'ok', 'pedidos'=>$pedidos], 200);
-        }
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -57,92 +44,16 @@ class PedidoController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    //Nota: no esta en uso
-    public function storeFull(Request $request)
-    {
-        //NOTA:El parametro estado se debe pasar en el body del la peticion.
-
-        $estado = $request->input('estado');
-
-        // Primero comprobaremos si estamos recibiendo todos los campos.
-        if (!$request->input('direccion') || !$request->input('descripcion') || !$request->input('referencia') ||
-            $estado == null || !$request->input('categoria_id') || !$request->input('subcategoria_id') ||
-            !$request->input('usuario_id') || !$request->input('socio_id') || !$request->input('servicio_id'))
-        {
-            // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
-            return response()->json(['error'=>'Faltan datos necesarios para el proceso de alta.'],422);
-        }
-
-        //validaciones
-        $aux2 = \App\Categoria::find($request->input('categoria_id'));
-        if(count($aux2) == 0){
-           // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'No existe la categoría a la cual se quiere asociar la subcategoría.'], 409);
-        }
-
-        $aux3 = \App\Subcategoria::find($request->input('subcategoria_id'));
-        if(count($aux3) == 0){
-           // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'No existe la subcategoría a la cual se quiere asociar la subcategoría.'], 409);
-        }
-
-        $aux4 = \App\User::find($request->input('usuario_id'));
-        if(count($aux4) == 0){
-           // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'No existe el usuario al cual se quiere asociar el pedido.'], 409);
-        }
-
-        $aux5 = \App\Socio::find($request->input('socio_id'));
-        if(count($aux5) == 0){
-           // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'No existe el socio al cual se quiere asociar el pedido.'], 409);
-        }
-
-        $aux6 = \App\Servicio::find($request->input('servicio_id'));
-        if(count($aux6) == 0){
-           // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'No existe el servicio al cual se quiere asociar el pedido.'], 409);
-        }        
-
-        /*if($nuevoPedido=\App\Pedido::create($request->all())){
-           return response()->json(['status'=>'ok', 'pedido'=>$nuevoPedido], 200);
-        }else{
-            return response()->json(['error'=>'Error al crear el pedido.'], 500);
-        }*/
-
-        /*Primero creo una instancia en la tabla subcategorias*/
-        $pedido = new \App\Pedido;
-
-        // Listado de campos recibidos teóricamente.
-        $pedido->direccion=$request->input('direccion'); 
-        $pedido->descripcion=$request->input('descripcion'); 
-        $pedido->referencia=$request->input('referencia'); 
-        $pedido->lat=$request->input('lat');
-        $pedido->lng=$request->input('lng');
-        $pedido->total=$aux6->costo;
-        $pedido->estado=$request->input('estado');
-        $pedido->categoria_id=$request->input('categoria_id');
-        $pedido->subcategoria_id=$request->input('subcategoria_id');
-        $pedido->usuario_id=$request->input('usuario_id');
-        $pedido->socio_id=$request->input('socio_id');
-        $pedido->servicio_id=$request->input('servicio_id');
-
-        if($pedido->save()){
-           return response()->json(['status'=>'ok', 'pedido'=>$pedido], 200);
-        }else{
-            return response()->json(['error'=>'Error al crear el pedido.'], 500);
-        }
-    }
-
     public function store(Request $request)
     {
         //NOTA:El parametro estado se debe pasar en el body del la peticion.
+        //lat y lng no son requeridos
 
         $estado = $request->input('estado');
 
         // Primero comprobaremos si estamos recibiendo todos los campos.
         if (!$request->input('direccion') || !$request->input('descripcion') || !$request->input('referencia') ||
-            $estado == null || !$request->input('categoria_id') || !$request->input('subcategoria_id') ||
+            $estado == null || !$request->input('total') || !$request->input('productos') ||
             !$request->input('usuario_id'))
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
@@ -150,35 +61,40 @@ class PedidoController extends Controller
         }
 
         //validaciones
-        $aux2 = \App\Categoria::find($request->input('categoria_id'));
-        if(count($aux2) == 0){
-           // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'No existe la categoría a la cual se quiere asociar la subcategoría.'], 409);
-        }
-
-        $aux3 = \App\Subcategoria::find($request->input('subcategoria_id'));
-        if(count($aux3) == 0){
-           // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'No existe la subcategoría a la cual se quiere asociar la subcategoría.'], 409);
-        }
-
-        $aux4 = \App\User::find($request->input('usuario_id'));
-        if(count($aux4) == 0){
+        $aux1 = \App\User::find($request->input('usuario_id'));
+        if(count($aux1) == 0){
            // Devolvemos un código 409 Conflict. 
             return response()->json(['error'=>'No existe el usuario al cual se quiere asociar el pedido.'], 409);
-        }     
+        } 
 
-        /*if($nuevoPedido=\App\Pedido::create($request->all())){
-           return response()->json(['status'=>'ok', 'pedido'=>$nuevoPedido], 200);
+        //Verificar que todos los productos del pedido existen
+        $productos = json_decode($request->input('productos'));
+        for ($i=0; $i < count($productos) ; $i++) { 
+            $aux2 = \App\Producto::find($productos[$i]->producto_id);
+            if(count($aux2) == 0){
+               // Devolvemos un código 409 Conflict. 
+                return response()->json(['error'=>'No existe el producto con id '.$productos[$i]->producto_id], 409);
+            }   
+        }    
+
+        if($nuevoPedido=\App\Pedido::create($request->all())){
+
+            //Crear las relaciones en la tabla pivote
+            for ($i=0; $i < count($productos) ; $i++) { 
+
+                $nuevoPedido->productos()->attach($productos[$i]->producto_id, ['cantidad' => $productos[$i]->cantidad, 'precio' => $productos[$i]->precio]);
+                   
+            }
+            return response()->json(['status'=>'ok', 'pedido'=>$nuevoPedido], 200);
         }else{
             return response()->json(['error'=>'Error al crear el pedido.'], 500);
-        }*/
+        }
 
         /*Primero creo una instancia en la tabla subcategorias*/
-        $pedido = new \App\Pedido;
+        //$pedido = new \App\Pedido;
 
         // Listado de campos recibidos teóricamente.
-        $pedido->direccion=$request->input('direccion'); 
+        /*$pedido->direccion=$request->input('direccion'); 
         $pedido->descripcion=$request->input('descripcion'); 
         $pedido->referencia=$request->input('referencia'); 
         $pedido->lat=$request->input('lat');
@@ -193,7 +109,7 @@ class PedidoController extends Controller
            return response()->json(['status'=>'ok', 'pedido'=>$pedido], 200);
         }else{
             return response()->json(['error'=>'Error al crear el pedido.'], 500);
-        }
+        }*/
     }
 
     /**
@@ -210,20 +126,8 @@ class PedidoController extends Controller
         if(count($pedido)==0){
             return response()->json(['error'=>'No existe el pedido con id '.$id], 404);          
         }else{
-            return response()->json(['status'=>'ok', 'pedido'=>$pedido], 200);
-        }
-    }
 
-    public function pedidoInformacion($id)
-    {
-        //cargar un pedido con toda su informacion asociada
-        $pedido = \App\Pedido::where('id', $id)->with('usuario')->with('servicio')
-                ->with('socio')->with('categoria')
-                ->with('subcategoria')->with('calificacion')->get();
-
-        if(count($pedido)==0){
-            return response()->json(['error'=>'No existe el pedido con id '.$id], 404);          
-        }else{
+            $pedido->productos = $pedido->productos;
             return response()->json(['status'=>'ok', 'pedido'=>$pedido], 200);
         }
     }
@@ -263,15 +167,9 @@ class PedidoController extends Controller
         $referencia=$request->input('referencia'); 
         $lat=$request->input('lat');
         $lng=$request->input('lng');
-        //$costo=$request->input('costo');
+        $total=$request->input('total');
         $estado=$request->input('estado');
-        //$categoria_id=$request->input('categoria_id');
-        //$subcategoria_id=$request->input('subcategoria_id');
-        //$usuario_id=$request->input('usuario_id');
-        //$socio_id=$request->input('socio_id');
-        $servicio_id=$request->input('servicio_id');
-
-
+        //$productos=$request->input('productos');
 
         // Creamos una bandera para controlar si se ha modificado algún dato.
         $bandera = false;
@@ -307,35 +205,15 @@ class PedidoController extends Controller
             $bandera=true;
         }
 
-        if ($estado != null && $estado!='')
+        if ($total != null && $total!='')
         {
-            $pedido->estado = $estado;
+            $pedido->total = $total;
             $bandera=true;
         }
 
-        /*if ($socio_id != null && $socio_id!='')
+        if ($estado != null && $estado!='')
         {
-            $aux5 = \App\Socio::find($request->input('socio_id'));
-            if(count($aux5) == 0){
-               // Devolvemos un código 409 Conflict. 
-                return response()->json(['error'=>'No existe el socio al cual se quiere asociar el pedido.'], 409);
-            }
-
-            $pedido->socio_id = $socio_id;
-            $bandera=true;
-        }*/
-
-        if ($servicio_id != null && $servicio_id!='')
-        {
-            $aux6 = \App\Servicio::find($request->input('servicio_id'));
-            if(count($aux6) == 0){
-               // Devolvemos un código 409 Conflict. 
-                return response()->json(['error'=>'No existe el servicio al cual se quiere asociar el pedido.'], 409);
-            } 
-
-            //$pedido->total=$aux6->costo;
-            $pedido->servicio_id = $servicio_id;
-            $pedido->socio_id = $aux6->socio_id;
+            $pedido->estado = $estado;
             $bandera=true;
         }
 
@@ -374,13 +252,8 @@ class PedidoController extends Controller
             return response()->json(['error'=>'No existe el pedido con id '.$id], 404);
         } 
        
-        $calificacion = $pedido->calificacion;
-
-        if (sizeof($calificacion) > 0 )
-        {
-            // Eliminamos la calificacion del pedido.
-            $calificacion->delete();
-        }
+        //Eliminar las relaciones(productos) en la tabla pivote
+        $pedido->productos()->detach();
 
         // Eliminamos el pedido.
         $pedido->delete();
