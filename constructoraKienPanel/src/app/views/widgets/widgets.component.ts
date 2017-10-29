@@ -1,394 +1,174 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { HttpClient, HttpParams  } from '@angular/common/http';
+
 
 @Component({
-  templateUrl: 'widgets.component.html'
+  selector: 'app-p',
+  templateUrl: 'widgets.component.html',
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class WidgetsComponent {
+  title = 'app';
+  public rows:Array<any> = [];
+  public columns:Array<any> = [
+    {title: 'Usuarios', name: 'user', sort: '', filtering: {filterString: '', placeholder: 'Buscar usuario'}},
+    {title: 'Nombre', name: 'nombre', filtering: {filterString: '', placeholder: 'Buscar nombre'}},
+    {title: 'Email', name: 'correo', sort: false, filtering: {filterString: '', placeholder: 'Buscar correo'}},
+    {title: 'Teléfono', className: ['office-header', 'text-success'], name: 'telefono', sort: 'asc', filtering: {filterString: '', placeholder: 'Buscar teléfono'}}
+  ];
+  public page:number = 1;
+  public itemsPerPage:number = 10;
+  public maxSize:number = 5;
+  public numPages:number = 1;
+  public length:number = 0;
 
-  constructor() { }
+  public config:any = {
+    paging: true,
+    sorting: {columns: this.columns},
+    filtering: {filterString: ''},
+    className: ['table-striped', 'table-bordered']
+  };
 
-  public brandPrimary = '#20a8d8';
-  public brandSuccess = '#4dbd74';
-  public brandInfo = '#63c2de';
-  public brandWarning = '#f8cb00';
-  public brandDanger = '#f86c6b';
+  private data:Array<any> = [];
+  //private data:any;
+  public data2:any;
+  public socios:any;
 
-  // dropdown buttons
-  public status: { isopen } = { isopen: false };
-  public toggleDropdown($event: MouseEvent): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-    this.status.isopen = !this.status.isopen;
+  public bigTotalItems:number = 175;
+  public bigCurrentPage:number = 1;
+
+ 
+  public pageChanged(event:any):void {
+    console.log('Page changed to: ' + event.page);
+    console.log('Number items per page: ' + event.itemsPerPage);
   }
 
-  // convert Hex to RGBA
-  // public convertHex(hex: string, opacity: number){
-  //   hex = hex.replace('#','');
-  //   let r = parseInt(hex.substring(0,2), 16);
-  //   let g = parseInt(hex.substring(2,4), 16);
-  //   let b = parseInt(hex.substring(4,6), 16);
-  //
-  //   let rgba = 'rgba('+r+','+g+','+b+','+opacity/100+')';
-  //   return rgba;
-  // }
+    constructor(private http: HttpClient) {
+      this.length = this.data.length;
+    }
+    p: number = 1;
+    collection: any;  
+    public term: any;
+    ngOnInit(): void {
+      this.http.get('http://manappger.internow.com.mx/constructoraKienAPI/public/usuarios')
+         .toPromise()
+         .then(
+           data => { // Success
+             console.log(data);
+             this.data2 = data;
+             this.socios=data;
+             this.data=this.socios.usuarios;
+             this.collection=this.socios.socios;
+             console.log(this.socios);
+             //this.bigTotalItems = this.data.lenght;
 
-  // events
-  public chartClicked(e: any): void {
-    console.log(e);
+             this.length = this.data.length;
+        console.log(this.length);
+             this.onChangeTable(this.config);
+ 
+
+           },
+           msg => { // Error
+             console.log(msg.error.error);
+
+           }
+         );
+
+         this.onChangeTable(this.config);
+    }
+
+
+
+  public changePage(page:any, data:Array<any> = this.data):Array<any> {
+    let start = (page.page - 1) * page.itemsPerPage;
+    let end = page.itemsPerPage > -1 ? (start + page.itemsPerPage) : data.length;
+    return data.slice(start, end);
   }
 
-  public chartHovered(e: any): void {
-    console.log(e);
+  public changeSort(data:any, config:any):any {
+    if (!config.sorting) {
+      return data;
+    }
+
+    let columns = this.config.sorting.columns || [];
+    let columnName:string = void 0;
+    let sort:string = void 0;
+
+    for (let i = 0; i < columns.length; i++) {
+      if (columns[i].sort !== '' && columns[i].sort !== false) {
+        columnName = columns[i].name;
+        sort = columns[i].sort;
+      }
+    }
+
+    if (!columnName) {
+      return data;
+    }
+
+    // simple sorting
+    return data.sort((previous:any, current:any) => {
+      if (previous[columnName] > current[columnName]) {
+        return sort === 'desc' ? -1 : 1;
+      } else if (previous[columnName] < current[columnName]) {
+        return sort === 'asc' ? -1 : 1;
+      }
+      return 0;
+    });
   }
 
-  // lineChart1
-  public lineChart1Data: Array<any> = [
-    {
-      data: [65, 59, 84, 84, 51, 55, 40],
-      label: 'Series A'
+  public changeFilter(data:any, config:any):any {
+    let filteredData:Array<any> = data;
+    this.columns.forEach((column:any) => {
+      if (column.filtering) {
+        filteredData = filteredData.filter((item:any) => {
+          return item[column.name].match(column.filtering.filterString);
+        });
+      }
+    });
+
+    if (!config.filtering) {
+      return filteredData;
     }
-  ];
-  public lineChart1Labels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  public lineChart1Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        gridLines: {
-          color: 'transparent',
-          zeroLineColor: 'transparent'
-        },
-        ticks: {
-          fontSize: 2,
-          fontColor: 'transparent',
+
+    if (config.filtering.columnName) {
+      return filteredData.filter((item:any) =>
+        item[config.filtering.columnName].match(this.config.filtering.filterString));
+    }
+
+    let tempArray:Array<any> = [];
+    filteredData.forEach((item:any) => {
+      let flag = false;
+      this.columns.forEach((column:any) => {
+        if (item[column.name].toString().match(this.config.filtering.filterString)) {
+          flag = true;
         }
+      });
+      if (flag) {
+        tempArray.push(item);
+      }
+    });
+    filteredData = tempArray;
 
-      }],
-      yAxes: [{
-        display: false,
-        ticks: {
-          display: false,
-          min: 40 - 5,
-          max: 84 + 5,
-        }
-      }],
-    },
-    elements: {
-      line: {
-        borderWidth: 1
-      },
-      point: {
-        radius: 4,
-        hitRadius: 10,
-        hoverRadius: 4,
-      },
-    },
-    legend: {
-      display: false
-    }
-  };
-  public lineChart1Colours: Array<any> = [
-    { // grey
-      backgroundColor: this.brandPrimary,
-      borderColor: 'rgba(255,255,255,.55)'
-    }
-  ];
-  public lineChart1Legend = false;
-  public lineChart1Type = 'line';
+    return filteredData;
+  }
 
-  // lineChart2
-  public lineChart2Data: Array<any> = [
-    {
-      data: [1, 18, 9, 17, 34, 22, 11],
-      label: 'Series A'
+  public onChangeTable(config:any, page:any = {page: this.page, itemsPerPage: this.itemsPerPage}):any {
+    if (config.filtering) {
+      Object.assign(this.config.filtering, config.filtering);
     }
-  ];
-  public lineChart2Labels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  public lineChart2Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        gridLines: {
-          color: 'transparent',
-          zeroLineColor: 'transparent'
-        },
-        ticks: {
-          fontSize: 2,
-          fontColor: 'transparent',
-        }
 
-      }],
-      yAxes: [{
-        display: false,
-        ticks: {
-          display: false,
-          min: 1 - 5,
-          max: 34 + 5,
-        }
-      }],
-    },
-    elements: {
-      line: {
-        tension: 0.00001,
-        borderWidth: 1
-      },
-      point: {
-        radius: 4,
-        hitRadius: 10,
-        hoverRadius: 4,
-      },
-    },
-    legend: {
-      display: false
+    if (config.sorting) {
+      Object.assign(this.config.sorting, config.sorting);
     }
-  };
-  public lineChart2Colours: Array<any> = [
-    { // grey
-      backgroundColor: this.brandInfo,
-      borderColor: 'rgba(255,255,255,.55)'
-    }
-  ];
-  public lineChart2Legend = false;
-  public lineChart2Type = 'line';
 
+    let filteredData = this.changeFilter(this.data, this.config);
+    let sortedData = this.changeSort(filteredData, this.config);
+    this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
+    this.length = sortedData.length;
+  }
 
-  // lineChart3
-  public lineChart3Data: Array<any> = [
-    {
-      data: [78, 81, 80, 45, 34, 12, 40],
-      label: 'Series A'
-    }
-  ];
-  public lineChart3Labels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  public lineChart3Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        display: false
-      }],
-      yAxes: [{
-        display: false
-      }]
-    },
-    elements: {
-      line: {
-        borderWidth: 2
-      },
-      point: {
-        radius: 0,
-        hitRadius: 10,
-        hoverRadius: 4,
-      },
-    },
-    legend: {
-      display: false
-    }
-  };
-  public lineChart3Colours: Array<any> = [
-    {
-      backgroundColor: 'rgba(255,255,255,.2)',
-      borderColor: 'rgba(255,255,255,.55)',
-    }
-  ];
-  public lineChart3Legend = false;
-  public lineChart3Type = 'line';
-
-
-  // barChart1
-  public barChart1Data: Array<any> = [
-    {
-      data: [78, 81, 80, 45, 34, 12, 40, 78, 81, 80, 45, 34, 12, 40, 12, 40],
-      label: 'Series A'
-    }
-  ];
-  public barChart1Labels: Array<any> = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'];
-  public barChart1Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        display: false,
-        barPercentage: 0.6,
-      }],
-      yAxes: [{
-        display: false
-      }]
-    },
-    legend: {
-      display: false
-    }
-  };
-  public barChart1Colours: Array<any> = [
-    {
-      backgroundColor: 'rgba(255,255,255,.3)',
-      borderWidth: 0
-    }
-  ];
-  public barChart1Legend = false;
-  public barChart1Type = 'bar';
-
-  // lineChart4
-  public lineChart4Data: Array<any> = [
-    {
-      data: [4, 18, 9, 17, 34, 22, 11, 3, 15, 12, 18, 9],
-      label: 'Series A'
-    }
-  ];
-  public lineChart4Labels: Array<any> = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  public lineChart4Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        display: false,
-        points: false,
-      }],
-      yAxes: [{
-        display: false,
-      }]
-    },
-    elements: { point: { radius: 0 } },
-    legend: {
-      display: false
-    }
-  };
-  public lineChart4Colours: Array<any> = [
-    {
-      backgroundColor: 'transparent',
-      borderColor: 'rgba(255,255,255,.55)',
-      borderWidth: 2
-    }
-  ];
-  public lineChart4Legend = false;
-  public lineChart4Type = 'line';
-
-
-  // barChart2
-  public barChart2Data: Array<any> = [
-    {
-      data: [4, 18, 9, 17, 34, 22, 11, 3, 15, 12, 18, 9],
-      label: 'Series A'
-    }
-  ];
-  public barChart2Labels: Array<any> = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  public barChart2Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        display: false,
-        barPercentage: 0.6,
-      }],
-      yAxes: [{
-        display: false,
-        ticks: {
-          beginAtZero: true,
-        }
-      }]
-    },
-    legend: {
-      display: false
-    }
-  };
-  public barChart2Colours: Array<any> = [
-    {
-      backgroundColor: 'rgba(0,0,0,.2)',
-      borderWidth: 0
-    }
-  ];
-  public barChart2Legend = false;
-  public barChart2Type = 'bar';
-
-
-  // barChart3
-  public barChart3Data: Array<any> = [
-    {
-      data: [4, 18, 9, 17, 34, 22, 11, 3, 15, 12, 18, 9],
-      label: 'Series A'
-    }
-  ];
-  public barChart3Labels: Array<any> = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  public barChart3Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        display: false
-      }],
-      yAxes: [{
-        display: false
-      }]
-    },
-    legend: {
-      display: false
-    }
-  };
-  public barChart3Primary: Array<any> = [
-    {
-      backgroundColor: this.brandPrimary,
-      borderColor: 'transparent',
-      borderWidth: 1
-    }
-  ];
-  public barChart3Danger: Array<any> = [
-    {
-      backgroundColor: this.brandDanger,
-      borderColor: 'transparent',
-      borderWidth: 1
-    }
-  ];
-  public barChart3Success: Array<any> = [
-    {
-      backgroundColor: this.brandSuccess,
-      borderColor: 'transparent',
-      borderWidth: 1
-    }
-  ];
-  public barChart3Legend = false;
-  public barChart3Type = 'bar';
-
-
-  // lineChart5
-  public lineChart5Data: Array<any> = [
-    {
-      data: [65, 59, 84, 84, 51, 55, 40],
-      label: 'Series A'
-    }
-  ];
-  public lineChart5Labels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  public lineChart5Options: any = {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [{
-        display: false,
-        points: false,
-      }],
-      yAxes: [{
-        display: false,
-      }]
-    },
-    elements: { point: { radius: 0 } },
-    legend: {
-      display: false
-    }
-  };
-  public lineChart5Info: Array<any> = [
-    {
-      backgroundColor: 'transparent',
-      borderColor: this.brandInfo,
-      borderWidth: 2
-    }
-  ];
-  public lineChart5Success: Array<any> = [
-    {
-      backgroundColor: 'transparent',
-      borderColor: this.brandInfo,
-      borderWidth: 2
-    }
-  ];
-  public lineChart5Warning: Array<any> = [
-    {
-      backgroundColor: 'transparent',
-      borderColor: this.brandWarning,
-      borderWidth: 2
-    }
-  ];
-  public lineChart5Legend = false;
-  public lineChart5Type = 'line';
-
+  public onCellClick(data: any): any {
+    console.log(data);
+  }
+  
 }

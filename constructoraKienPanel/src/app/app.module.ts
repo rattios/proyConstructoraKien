@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
-
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
@@ -66,11 +65,15 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { LoginComponent } from './login/login.component';
 import { LoadingModule, ANIMATION_TYPES  } from 'ngx-loading';
+import { Ng2TableModule } from 'ng2-table/ng2-table';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @NgModule({
   imports: [
     BrowserModule,
-    FormsModule,
+   FormsModule,
+  Ng2TableModule,
+    PaginationModule.forRoot(),
     HttpClientModule,
     AppRoutingModule,
     BsDropdownModule.forRoot(),
