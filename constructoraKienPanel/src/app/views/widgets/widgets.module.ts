@@ -6,8 +6,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { WidgetsComponent } from './widgets.component';
 import { WidgetsRoutingModule } from './widgets-routing.module';
 import { FormsModule } from '@angular/forms';
-import { Ng2TableModule } from 'ng2-table/ng2-table';
-import { PaginationModule } from 'ngx-bootstrap/pagination';
+
 
 @NgModule({
   imports: [
@@ -16,8 +15,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     ChartsModule,
     BsDropdownModule,
     FormsModule,
-    Ng2TableModule,
-    PaginationModule.forRoot(),
+
   ],
   declarations: [ WidgetsComponent ]
 })
