@@ -1,0 +1,143 @@
+<div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Eliminar usuario </h4>
+        <button type="button" class="close" (click)="myModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Realmente desea eliminar al usuario {{eliminar_user}}?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="myModal.hide()">Close</button>
+        <button type="button" class="btn btn-danger" (click)="eliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div *ngIf="!selectedCliente">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="card">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card-header">
+              <div class="form-group" style="text-align: right;">
+               <label>Buscar: </label>
+               <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
+               <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button>
+              </div>
+                Lista de usuarios
+            </div>
+            <div class="card-body ">
+              <table class="table table-striped">
+                <thead>
+                   <th></th>
+                   <th style="text-align: center;">ID</th>
+                   <th style="text-align: center;">Usuario</th>
+                   <th style="text-align: center;">Nombre</th>
+                   <th style="text-align: center;">Correo</th>
+                   <th style="text-align: center;">Teléfono</th>
+                   <th style="text-align: center;">Acciones</th>
+                </thead>
+                <tbody>
+                   <tr *ngFor="let item of items" >
+                      <td></td>
+                      <td style="text-align: center;">{{item.id}}</td>
+                      <td style="text-align: center;">{{item.user}}</td>
+                      <td style="text-align: center;">{{item.nombre}}</td>
+                      <td style="text-align: center;">{{item.correo}}</td>
+                      <td style="text-align: center;">{{item.telefono}}</td>
+                      <td style="text-align: center;">
+                        <button type="button" class="btn btn-info" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" (click)="myModal.show(); aEliminar(item)"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+                      </td>
+                   </tr>
+                </tbody>
+              </table>
+                <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                  <div class="btn-group">
+                     <label style="margin-top:10px">Página {{currentIndex}}/{{pageNumber}} </label>
+                  </div>
+                  <div class="btn-group pull-right">
+                     <ul class="pagination" >
+                        <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" href="#">Atrás</a></li>
+                           <li *ngFor="let page of pagesIndex"  [ngClass]="{'active': (currentIndex == page)}">
+                              <a (click)="setPage(page)" href="#" >{{page}} </a>
+                           </li>
+                        <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" href="#">Siguiente</a></li>
+                     </ul>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+
+<div *ngIf="selectedCliente">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header">
+          <strong>Detelle de:</strong> {{selectedCliente.user}}
+        </div>
+        <div class="card-body">
+          <form action="" method="post" class="form-horizontal">
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Usuario" [(ngModel)]="selectedCliente.user">
+                </div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                  <input type="text" id="input2-group1" name="input2-group1" class="form-control" placeholder="Nombre" [(ngModel)]="selectedCliente.nombre">
+                </div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-envelope-o"></i></span>
+                  <input type="email" id="input3-group1" name="input3-group1" class="form-control" placeholder="Correo" [(ngModel)]="selectedCliente.correo">
+                </div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                  <input type="text" id="input4-group1" name="input4-group1" class="form-control" placeholder="Teléfono" [(ngModel)]="selectedCliente.telefono">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          
+        </div>
+      </div>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+
+<div class="my-container">
+    <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+</div>
+
+ 

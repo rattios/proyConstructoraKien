@@ -15,7 +15,7 @@ class ProductosMigration extends Migration
         Schema::create('productos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nombre')->unique();
-            $table->string('imagen');
+            $table->text('imagen');
             $table->float('costo'); //Costo por unidad
             $table->float('cantidad'); //Total de unidades
             $table->string('unidad'); //Kg por ejemplo

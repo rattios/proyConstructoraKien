@@ -66,11 +66,10 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { LoginComponent } from './login/login.component';
 import { LoadingModule, ANIMATION_TYPES  } from 'ngx-loading';
 
-
 @NgModule({
   imports: [
     BrowserModule,
-   FormsModule,
+    FormsModule,
     HttpClientModule,
     AppRoutingModule,
     BsDropdownModule.forRoot(),

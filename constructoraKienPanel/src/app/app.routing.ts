@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
+//import { LoginComponent } from './login/login.component';
 
 // Import Containers
 import {
@@ -9,9 +9,16 @@ import {
 } from './containers';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login',pathMatch: 'full', },
-  { path: 'login', component: LoginComponent },
-  { path: '', component: FullLayout, data: {
+  { path: '',
+    redirectTo: 'pages',
+    pathMatch: 'full',
+  },
+  /*{ path: 'login2',
+    component: LoginComponent
+  },*/
+  { path: '',
+    component: FullLayout,
+    data: {
       title: 'Home'
     },
     children: [
@@ -21,8 +28,25 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
-        loadChildren: './views/widgets/widgets.module#WidgetsModule'
+        loadChildren: './views/usuarios/usuarios.module#UsuariosModule'
       },
+      {
+        path: 'categorias',
+        loadChildren: './views/categorias/categorias.module#CategoriasModule'
+      },
+    ]
+  },
+  {
+    path: 'pages',
+    component: SimpleLayout,
+    data: {
+      title: 'Pages'
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: './views/pages/pages.module#PagesModule',
+      }
     ]
   }
 ];

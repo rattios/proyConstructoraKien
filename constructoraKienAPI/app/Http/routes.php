@@ -34,7 +34,9 @@ Route::group(  ['middleware' =>'cors'], function(){
     Route::post('/clientes','UsuarioController@storeCliente'); //Crea clientes para la app
     
 
-        //----Pruebas UsuarioController
+    Route::group(['middleware' => 'jwt-auth'], function(){
+
+                //----Pruebas UsuarioController
         Route::get('/usuarios','UsuarioController@index');
         Route::get('/usuarios/pedidos','UsuarioController@usuariosClientesPedidos');
         Route::post('/usuarios','UsuarioController@store'); //Crea admis para el panel
@@ -67,10 +69,6 @@ Route::group(  ['middleware' =>'cors'], function(){
         Route::put('/pedidos/{id}','PedidoController@update');
         Route::delete('/pedidos/{id}','PedidoController@destroy');
         Route::get('/pedidos/{id}','PedidoController@show');
-
-    Route::group(['middleware' => 'jwt-auth'], function(){
-
-        
 
     });
 });

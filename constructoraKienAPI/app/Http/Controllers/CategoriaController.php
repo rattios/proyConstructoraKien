@@ -87,7 +87,8 @@ class CategoriaController extends Controller
         }*/
 
         if($nuevaCategoria=\App\Categoria::create($request->all())){
-           return response()->json(['status'=>'ok', 'categoria'=>$nuevaCategoria], 200);
+           return response()->json(['status'=>'ok','message'=>'Categoría creada con exito.',
+             'categoria'=>$nuevaCategoria], 200);
         }else{
             return response()->json(['error'=>'Error al crear la categoría.'], 500);
         }
@@ -194,7 +195,8 @@ class CategoriaController extends Controller
         {
             // Almacenamos en la base de datos el registro.
             if ($categoria->save()) {
-                return response()->json(['status'=>'ok','categoria'=>$categoria], 200);
+                return response()->json(['status'=>'ok', 'message'=>'Categoría editada con exito.',
+                    'categoria'=>$categoria], 200);
             }else{
                 return response()->json(['error'=>'Error al actualizar la categoría.'], 500);
             }
