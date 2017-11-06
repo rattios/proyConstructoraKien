@@ -66,6 +66,9 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { LoginComponent } from './login/login.component';
 import { LoadingModule, ANIMATION_TYPES  } from 'ngx-loading';
 
+import { RutaBaseService } from './services/ruta-base.service';
+
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -90,11 +93,11 @@ import { LoadingModule, ANIMATION_TYPES  } from 'ngx-loading';
     ...APP_CONTAINERS,
     ...APP_COMPONENTS,
     ...APP_DIRECTIVES,
-    LoginComponent,
-    
-   
+    LoginComponent
   ],
-  providers: [{
+  providers: [
+    RutaBaseService,
+  {
     provide: LocationStrategy,
     useClass: HashLocationStrategy
   }],

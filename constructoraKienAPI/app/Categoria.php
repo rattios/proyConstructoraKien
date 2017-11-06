@@ -24,7 +24,7 @@ class Categoria extends Model
      *
      * @var array
      */
-    protected $fillable = ['nombre', 'imagen'];
+    protected $fillable = ['nombre', 'estado', 'imagen'];
 
     /**
      * The attributes excluded from the model's JSON form.

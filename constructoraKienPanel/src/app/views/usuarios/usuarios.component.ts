@@ -3,6 +3,7 @@ import { HttpClient, HttpParams  } from '@angular/common/http';
 
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.component'; //modales
 
+import { RutaBaseService } from '../../services/ruta-base.service';
 
 export class Cliente {
   id: number;
@@ -31,14 +32,14 @@ export class UsuariosComponent {
 
   prueba = 'prueba binding';
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private rutaService: RutaBaseService) {
 
     }
 
     ngOnInit(): void {
       this.loading = true;
-      this.http.get('http://localhost/gitHub/proyConstructoraKien/constructoraKienAPI/public/usuarios?token='+localStorage.getItem('constructora_token'))
-      //this.http.get('http://manappger.internow.com.mx/constructoraKienAPI/public/usuarios?token='+localStorage.getItem('constructora_token'))
+      //this.http.get('http://localhost/gitHub/proyConstructoraKien/constructoraKienAPI/public/usuarios?token='+localStorage.getItem('constructora_token'))
+      this.http.get(this.rutaService.getRutaApi()+'constructoraKienAPI/public/usuarios?token='+localStorage.getItem('constructora_token'))
          .toPromise()
          .then(
            data => { // Success

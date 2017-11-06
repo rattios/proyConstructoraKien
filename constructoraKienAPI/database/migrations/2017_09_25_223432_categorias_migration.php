@@ -15,6 +15,7 @@ class CategoriasMigration extends Migration
         Schema::create('categorias', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nombre')->unique();
+            $table->string('estado'); //ON - OFF
             $table->text('imagen');
             $table->timestamps();
         });

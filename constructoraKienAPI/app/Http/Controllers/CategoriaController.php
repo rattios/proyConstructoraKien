@@ -76,22 +76,25 @@ class CategoriaController extends Controller
         }
 
         /*Primero creo una instancia en la tabla categorias*/
-        //$categoria = new \App\Categoria;
-        //$categoria->nombre = $nombre;
-        //$categoria->imagen = $imagen;
+        $categoria = new \App\Categoria;
+        $categoria->nombre = $request->input('nombre');
+        $categoria->estado = 'ON';
+        $categoria->imagen = $request->input('imagen');
 
-        /*if($categoria->save()){
-           return response()->json(['status'=>'ok', 'categoria'=>$categoria], 200);
+
+        if($categoria->save()){
+           return response()->json(['status'=>'ok', 'message'=>'Categoría creada con exito.',
+             'categoria'=>$categoria], 200);
         }else{
             return response()->json(['error'=>'Error al crear la categoría.'], 500);
-        }*/
+        }
 
-        if($nuevaCategoria=\App\Categoria::create($request->all())){
+        /*if($nuevaCategoria=\App\Categoria::create($request->all())){
            return response()->json(['status'=>'ok','message'=>'Categoría creada con exito.',
              'categoria'=>$nuevaCategoria], 200);
         }else{
             return response()->json(['error'=>'Error al crear la categoría.'], 500);
-        }
+        }*/
 
         
     }
@@ -164,6 +167,7 @@ class CategoriaController extends Controller
 
         // Listado de campos recibidos teóricamente.
         $nombre=$request->input('nombre');
+        $estado=$request->input('estado');
         $imagen=$request->input('imagen');
 
 
@@ -182,6 +186,23 @@ class CategoriaController extends Controller
             }
 
             $categoria->nombre = $nombre;
+            $bandera=true;
+        }
+
+        if ($estado != null && $estado!='')
+        {
+
+            $productos = $categoria->productos;
+
+            if (sizeof($productos) > 0)
+            {
+                for ($i=0; $i < count($productos) ; $i++) { 
+                    $productos[$i]->estado = $estado;
+                    $productos[$i]->save();
+                }
+            }
+
+            $categoria->estado = $estado;
             $bandera=true;
         }
 

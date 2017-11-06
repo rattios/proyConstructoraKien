@@ -32,6 +32,9 @@ Route::group(  ['middleware' =>'cors'], function(){
      
     //Registro de clientes   
     Route::post('/clientes','UsuarioController@storeCliente'); //Crea clientes para la app
+
+    Route::get('/productos','ProductoController@index');
+    Route::get('/productos/categoria','ProductoController@productosCategoria');
     
 
     Route::group(['middleware' => 'jwt-auth'], function(){
@@ -55,8 +58,8 @@ Route::group(  ['middleware' =>'cors'], function(){
         Route::get('/categorias/{id}/productos','CategoriaController@categoriaProductos');
 
         //----Pruebas ProductoController
-        Route::get('/productos','ProductoController@index');
-        Route::get('/productos/categoria','ProductoController@productosCategoria');
+        //Route::get('/productos','ProductoController@index');
+        //Route::get('/productos/categoria','ProductoController@productosCategoria');
         Route::post('/productos/{categoria_id}','ProductoController@store');
         Route::put('/productos/{id}','ProductoController@update');
         Route::delete('/productos/{id}','ProductoController@destroy');

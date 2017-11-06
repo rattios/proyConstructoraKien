@@ -67,14 +67,19 @@
               <div class="row">
                 <div class="col-md-6">
                   <strong>Lista de categorías: </strong>
-                  <button type="button" class="btn btn-primary" (click)="agregar()"><i class="fa fa-plus-square-o"></i>&nbsp; Agregar</button>
+                  <!-- <button type="button" class="btn btn-primary" (click)="agregar()"><i class="fa fa-plus-square-o"></i>&nbsp; Agregar</button> -->
                 </div>
                 <div class="col-md-6">
                   <div class="form-group" style="text-align: right;">
                    <strong>Buscar: </strong>
                    <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
-                   <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button>
+                   <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
                   </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <button type="button" class="btn btn-primary" (click)="agregar()"><i class="fa fa-plus-square-o"></i>&nbsp; Agregar</button>
                 </div>
               </div>
             </div>
@@ -85,6 +90,7 @@
                    <th style="text-align: center;">ID</th>
                    <th style="text-align: center;">Nombre</th>
                    <th style="text-align: center;">Imagen</th>
+                   <th style="text-align: center;">Estado</th>
                    <th style="text-align: center;">Acciones</th>
                 </thead>
                 <tbody>
@@ -93,7 +99,14 @@
                       <td style="text-align: center; vertical-align:middle;">{{item.id}}</td>
                       <td style="text-align: center; vertical-align:middle;">{{item.nombre}}</td>
                       <!-- <td style="text-align: center;">{{item.imagen}}</td> -->
-                      <td style="text-align: center; vertical-align:middle;"><img src = "{{item.imagen}}" alt="" height="160px"></td> 
+                      <td style="text-align: center; vertical-align:middle;"><img src = "{{item.imagen}}" alt="" height="auto" width="100px"></td>
+                      <td style="text-align: center; vertical-align:middle;">
+                        <label class="switch switch-text switch-pill switch-primary">
+                          <input [checked]="item.estado === 'ON'" type="checkbox" class="switch-input" (change)="cambiarEstado(item)" >
+                          <span class="switch-label" data-on="On" data-off="Off"></span>
+                          <span class="switch-handle"></span>
+                        </label>
+                      </td> 
                       <td style="text-align: center; vertical-align:middle;">
                         <button type="button" class="btn btn-primary" (click)="aEditar(item)"><i class="fa fa-edit"></i>&nbsp; Editar</button>
                         <button type="button" class="btn btn-danger" data-toggle="modal" (click)="myModal.show(); aEliminar(item)"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
@@ -107,11 +120,11 @@
                   </div>
                   <div class="btn-group pull-right">
                      <ul class="pagination" >
-                        <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" href="#">Atrás</a></li>
+                        <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" >Atrás</a></li>
                            <li *ngFor="let page of pagesIndex"  [ngClass]="{'active': (currentIndex == page)}">
-                              <a (click)="setPage(page)" href="#" >{{page}} </a>
+                              <a (click)="setPage(page)"  >{{page}} </a>
                            </li>
-                        <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" href="#">Siguiente</a></li>
+                        <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" >Siguiente</a></li>
                      </ul>
                   </div>
                 </div>
@@ -142,14 +155,14 @@
                 </div>
               </div>
             </div>
-            <div class="form-group row">
+            <!-- <div class="form-group row">
               <div class="col-md-12">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
                   <input type="text" id="input2-group1" name="input2-group1" class="form-control" placeholder="Imagen" [(ngModel)]="objAEditar.imagen">
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div class="form-group row">
               <div class="col-md-12">
@@ -181,12 +194,19 @@
               </div>
             </div>
 
-            <img src = "{{objAEditar.imagen}}" alt="" height="160px">
+            <div *ngIf="subiendoImg">
+              <i class="fa fa-spinner fa-spin"></i>Cargando...
+            </div>
+
+            <div *ngIf="!subiendoImg">
+              <img src = "{{objAEditar.imagen}}" alt="" height="160px">
+            </div>
+            
             
           </form>
         </div>
         <div class="card-footer">
-          <button type="submit" class="btn btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          <button class="btn btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
           <button type="submit" class="btn btn-sm btn-success" (click)="editar()"><i class="fa fa-dot-circle-o"></i> Guardar</button>
           <!-- <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button> -->
           
@@ -250,6 +270,10 @@
                     <!-- <div>
                       Response: {{ uploadFile | json }}
                     </div> -->
+                </div>
+
+                <div *ngIf="subiendoImg">
+                 <i class="fa fa-spinner fa-spin"></i>Cargando...
                 </div>
 
                 <div *ngIf="uploadFile">

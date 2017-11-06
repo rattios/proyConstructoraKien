@@ -6,7 +6,7 @@ import 'rxjs/add/operator/toPromise';
 //import { ModalDirective } from 'ngx-bootstrap/modal/modal.component'; //modales
 import { ModalDirective } from 'ngx-bootstrap/modal';
 
-
+import { RutaBaseService } from '../../services/ruta-base.service';
 
 @Component({
   selector: 'app-p',
@@ -57,15 +57,17 @@ export class CategoriasComponent {
   public alerta_tipo: any; //success info warning danger  
   public alerta_msg: any;
 
-    constructor(private http: HttpClient,private router: Router) {
+  public subiendoImg = false;
+
+    constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService) {
 
     }
 
     ngOnInit(): void {
       this.loading = true;
 
-      this.http.get('http://localhost/gitHub/proyConstructoraKien/constructoraKienAPI/public/categorias?token='+localStorage.getItem('constructora_token'))
-      //this.http.get('http://manappger.internow.com.mx/constructoraKienAPI/public/categorias?token='+localStorage.getItem('constructora_token'))
+      this.http.get(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias?token='+localStorage.getItem('constructora_token'))
+      //this.http.get('http://constructorakien.internow.com.mx/constructoraKienAPI/public/categorias?token='+localStorage.getItem('constructora_token'))
          .toPromise()
          .then(
            data => { // Success
@@ -103,12 +105,14 @@ export class CategoriasComponent {
                   this.alerta_tipo = 'info';
                   this.alerta_msg = msg.error.error;
                   this.alerta = true;
+                  setTimeout(()=>{this.alerta = false;},4000);
               }
 
            }
          );
     }
 
+    //Alerta cuando se vence el token
     ok_alerta(): void {
       this.router.navigate(['pages']);
     }
@@ -148,8 +152,8 @@ export class CategoriasComponent {
         token: localStorage.getItem('constructora_token')
       }
 
-      this.http.delete('http://localhost/gitHub/proyConstructoraKien/constructoraKienAPI/public/categorias/'+this.eliminar_id+'?token='+localStorage.getItem('constructora_token'))
-      //this.http.delete('http://manappger.internow.com.mx/constructoraKienAPI/public/categorias/'+this.eliminar_id+'?token='+localStorage.getItem('constructora_token'))
+      this.http.delete(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+this.eliminar_id+'?token='+localStorage.getItem('constructora_token'))
+      //this.http.delete('http://constructorakien.internow.com.mx/constructoraKienAPI/public/categorias/'+this.eliminar_id+'?token='+localStorage.getItem('constructora_token'))
          .toPromise()
          .then(
            data => { // Success
@@ -220,7 +224,8 @@ export class CategoriasComponent {
       var imgAux: any;
       
       if(this.uploadFile){
-        imgAux = 'http://localhost/gitHub/proyConstructoraKien/images_uploads/uploads/'+this.uploadFile.generatedName;        
+        imgAux = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        //imgAux = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;        
       }
       else{
         imgAux = '';
@@ -234,13 +239,17 @@ export class CategoriasComponent {
         imagen: imgAux
       }
 
-      this.http.post('http://localhost/gitHub/proyConstructoraKien/constructoraKienAPI/public/categorias', datos)
-      //this.http.post('http://manappger.internow.com.mx/constructoraKienAPI/public/categorias', datos)
+      this.http.post(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias', datos)
+      //this.http.post('http://constructorakien.internow.com.mx/constructoraKienAPI/public/categorias', datos)
          .toPromise()
          .then(
            data => { // Success
               console.log(data);
               this.data = data;
+
+              if(!this.productList){
+                this.productList = [];
+              }
            
               this.productList.push(this.data.categoria);
 
@@ -291,10 +300,11 @@ export class CategoriasComponent {
       var imgAux: any;
       
       if(this.uploadFile){
-        imgAux = 'http://localhost/gitHub/proyConstructoraKien/images_uploads/uploads/'+this.uploadFile.generatedName;        
+        imgAux = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName; 
+        //imgAux = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;        
       }
       else{
-        imgAux = '';
+        imgAux = this.objAEditar.imagen;
       }
       
       this.loading = true;
@@ -305,8 +315,8 @@ export class CategoriasComponent {
         imagen: imgAux
       }
 
-      this.http.put('http://localhost/gitHub/proyConstructoraKien/constructoraKienAPI/public/categorias/'+this.objAEditar.id, datos)
-      //this.http.post('http://manappger.internow.com.mx/constructoraKienAPI/public/categorias', datos)
+      this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+this.objAEditar.id, datos)
+      //this.http.put('http://constructorakien.internow.com.mx/constructoraKienAPI/public/categorias/'+this.objAEditar.id, datos)
          .toPromise()
          .then(
            data => { // Success
@@ -348,6 +358,58 @@ export class CategoriasComponent {
                   this.alerta_msg = msg.error.error;
                   this.alerta_boton = true;
                   this.mostrar = false;
+              }
+              else { 
+                  //alert(msg.error.error);
+
+                  this.alerta_tipo = 'danger';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta = true;
+                  setTimeout(()=>{this.alerta = false;},4000);
+              }
+           }
+         );
+    }
+
+    cambiarEstado(obj): void {
+
+      var v_estado: any;
+
+      if (obj.estado == 'ON') {
+        //obj.estado = 'OFF';
+        v_estado = 'OFF';
+      }else{
+        //obj.estado = 'ON';
+        v_estado = 'ON';
+      }
+
+      var datos= {
+        token: localStorage.getItem('constructora_token'),
+        estado: v_estado
+      }
+
+      this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+obj.id, datos)
+         .toPromise()
+         .then(
+           data => { // Success
+              console.log(data);
+              //this.data = data;
+
+              obj.estado = v_estado;
+              
+           },
+           msg => { // Error
+             console.log(msg);
+             console.log(msg.error.error);
+
+             //token invalido/ausente o token expiro
+             if(msg.status == 400 || msg.status == 401){ 
+                  //alert(msg.error.error);
+                  //ir a login
+
+                  this.alerta_tipo = 'warning';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta_boton = true;
               }
               else { 
                   //alert(msg.error.error);
@@ -453,15 +515,22 @@ export class CategoriasComponent {
     uploadFile: any;
     hasBaseDropZoneOver: boolean = false;
     options: Object = {
-      url: 'http://localhost/gitHub/proyConstructoraKien/images_uploads/upload.php'
+      url: this.rutaService.getRutaImages()+'upload.php'
+      //url: 'http://constructorakien.internow.com.mx/images_uploads/upload.php'
     };
     sizeLimit = 2000000;
    
     handleUpload(data): void {
+      setTimeout(() => {
+         this.subiendoImg = false;
+       },1000);
+      
       if (data && data.response) {
         data = JSON.parse(data.response);
         this.uploadFile = data;
-        this.objAAgregar.imagen = 'http://localhost/gitHub/proyConstructoraKien/images_uploads/uploads/'+this.uploadFile.generatedName;
+        this.objAAgregar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        this.objAEditar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        //this.objAAgregar.imagen = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;
       }
     }
    
@@ -470,6 +539,7 @@ export class CategoriasComponent {
     }
    
     beforeUpload(uploadingFile): void {
+      this.subiendoImg = true;
       if (uploadingFile.size > this.sizeLimit) {
         uploadingFile.setAbort();
         alert('File is too large');

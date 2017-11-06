@@ -26,13 +26,19 @@
         <div class="row">
           <div class="col-md-12">
             <div class="card-header">
-              <div class="form-group" style="text-align: right;">
-               <label>Buscar: </label>
-               <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
-               <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button>
+              <div class="row">
+                <div class="col-md-6">
+                  <strong>Lista de usuarios: </strong>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group" style="text-align: right;">
+                   <strong>Buscar: </strong>
+                   <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
+                   <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
+                  </div>
+                </div>
               </div>
-                Lista de usuarios
-            </div>
+            </div>  
             <div class="card-body ">
               <table class="table table-striped">
                 <thead>

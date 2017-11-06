@@ -1,0 +1,397 @@
+<!--Modal automatica:
+ <button type="button" class="btn btn-primary" (click)="showModal()">Render auto-shown modal</button>
+<div *ngIf="isModalShown" [config]="{ show: true }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Auto shown modal</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>I am a modal that is shown right after initialization!</p>
+        <p>I wasn't present in DOM until you clicked the button</p>
+        <p>When you close me, I'll be removed from the DOM</p>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!-- <alert type="success" dismissible="true">
+  <strong>Well done!</strong> You successfully read this important alert message.
+</alert>
+ -->
+
+<div *ngIf="alerta">
+  <alert [type]="alerta_tipo" dismissible="true">
+    <strong>{{alerta_msg}}</strong> 
+  </alert>
+</div>
+
+<div *ngIf="alerta_boton">
+  <alert [type]="alerta_tipo" >
+    <strong>{{alerta_msg}}</strong>
+    <button type="button" class="btn btn-secondary" (click)="ok_alerta()">ok</button> 
+  </alert>
+</div>
+
+<div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Eliminar producto </h4>
+        <button type="button" class="close" (click)="myModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Realmente desea eliminar el producto {{eliminar_nombre}}?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="myModal.hide()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="myModal.hide(); eliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div *ngIf="!editando && !agregando && mostrar">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="card">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-md-6">
+                  <strong>Lista de productos: </strong>
+                  <!-- <button type="button" class="btn btn-primary" (click)="agregar()"><i class="fa fa-plus-square-o"></i>&nbsp; Agregar</button> -->
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group" style="text-align: right;">
+                   <strong>Buscar: </strong>
+                   <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
+                   <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <button type="button" class="btn btn-primary" (click)="agregar()"><i class="fa fa-plus-square-o"></i>&nbsp; Agregar</button>
+                </div>
+              </div>
+            </div>
+            <div class="card-body ">
+              <table class="table table-striped">
+                <thead>
+                   <th></th>
+                   <th style="text-align: center;">ID</th>
+                   <th style="text-align: center;">Nombre</th>
+                   <th style="text-align: center;">Imagen</th>
+                   <th style="text-align: center;">Categoría</th>
+                   <th style="text-align: center;">Costo</th>
+                   <th style="text-align: center;">Cantidad</th>
+                   <th style="text-align: center;">Unidad</th>
+                   <th style="text-align: center;">Estado</th>
+                   <th style="text-align: center;">Acciones</th>
+                </thead>
+                <tbody>
+                   <tr *ngFor="let item of items" >
+                      <td></td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.id}}</td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.nombre}}</td>
+                      <!-- <td style="text-align: center;">{{item.imagen}}</td> -->
+                      <td style="text-align: center; vertical-align:middle;"><img src = "{{item.imagen}}" alt="" height="auto" width="100px"></td> 
+                      <td style="text-align: center; vertical-align:middle;">{{item.categoria.nombre}}</td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.costo}}</td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.cantidad}}</td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.unidad}}</td>
+                      <td style="text-align: center; vertical-align:middle;">
+                        <label class="switch switch-text switch-pill switch-primary">
+                          <input [disabled]="item.categoria.estado == 'OFF'"  [checked]="item.estado === 'ON'" type="checkbox" class="switch-input" (change)="cambiarEstado(item)" >
+                          <span class="switch-label" data-on="On" data-off="Off"></span>
+                          <span class="switch-handle"></span>
+                        </label>
+                      </td>
+                      <td style="text-align: center; vertical-align:middle;">
+                        <button type="button" class="btn btn-primary" (click)="aEditar(item)"><i class="fa fa-edit"></i>&nbsp; Editar</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" (click)="myModal.show(); aEliminar(item)"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+                      </td> 
+                   </tr>
+                </tbody>
+              </table>
+                <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                  <div class="btn-group">
+                     <label style="margin-top:10px">Página {{currentIndex}}/{{pageNumber}} </label>
+                  </div>
+                  <div class="btn-group pull-right">
+                     <ul class="pagination" >
+                        <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" >Atrás</a></li>
+                           <li *ngFor="let page of pagesIndex"  [ngClass]="{'active': (currentIndex == page)}">
+                              <a (click)="setPage(page)"  >{{page}} </a>
+                           </li>
+                        <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" >Siguiente</a></li>
+                     </ul>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+
+<div *ngIf="editando">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header">
+          <strong>Editar producto: </strong> {{objAEditar.nombre}}
+        </div>
+        <div class="card-body">
+          <form action="" method="post" class="form-horizontal">
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-cubes"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Nombre" [(ngModel)]="objAEditar.nombre">
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
+                  <input type="text" id="input2-group1" name="input2-group1" class="form-control" placeholder="Imagen" [(ngModel)]="objAEditar.imagen">
+                </div>
+              </div>
+            </div> -->
+
+            <div class="form-group row">
+              <label class="col-md-3 form-control-label" for="select">Categoría</label>
+              <div class="col-md-9">
+                <select id="select" name="select" class="form-control" [(ngModel)]="objAEditar.categoria_id" >
+                  <option *ngFor="let categoria of categorias" [value]="categoria.id">{{categoria.nombre}}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- <div class="col-md-4">
+                <div class="form-group form-black label-floating">
+                    <label class="labels">Cartera:</label>
+                    <select name="cartera_id" formControlName="cartera_id" class="form-control" (change)="getTicket($event)">
+                        <option *ngFor="let title of carteras" [value]="title.id">{{title.numero}} {{title.descripcion}}</option>
+                    </select>
+                </div>
+            </div> -->
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                  <input type="text" id="input3-group1" name="input3-group1" class="form-control" placeholder="Costo" [(ngModel)]="objAEditar.costo">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-tasks"></i></span>
+                  <input type="text" id="input4-group1" name="input4-group1" class="form-control" placeholder="Cantidad" [(ngModel)]="objAEditar.cantidad">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-bullseye"></i></span>
+                  <input type="text" id="input5-group1" name="input5-group1" class="form-control" placeholder="Unidad" [(ngModel)]="objAEditar.unidad">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
+                    <!-- app.component.html -->
+                    <input type="file"
+                           ngFileSelect
+                           [options]="options"
+                           (onUpload)="handleUpload($event)"
+                           (beforeUpload)="beforeUpload($event)">
+                     
+                    <!-- drag & drop file example-->
+                    <style>
+                      .file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
+                    </style> 
+                    <div ngFileDrop
+                         [options]="options"
+                         (onUpload)="handleUpload($event)"
+                         [ngClass]="{'file-over': hasBaseDropZoneOver}"
+                         (onFileOver)="fileOverBase($event)"
+                         (beforeUpload)="beforeUpload($event)">
+                    </div>
+                     
+                    <!-- <div>
+                      Response: {{ uploadFile | json }}
+                    </div> -->
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="subiendoImg">
+              <i class="fa fa-spinner fa-spin"></i>Cargando...
+            </div>
+
+            <div *ngIf="!subiendoImg">
+              <img src = "{{objAEditar.imagen}}" alt="" height="160px">
+            </div>
+            
+          </form>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          <button type="submit" class="btn btn-sm btn-success" (click)="editar()"><i class="fa fa-dot-circle-o"></i> Guardar</button>
+          <!-- <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button> -->
+          
+        </div>
+      </div>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+
+<div *ngIf="agregando">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header">
+          <strong>Agregar producto:</strong>
+        </div>
+        <div class="card-body">
+          <form action="" method="post" class="form-horizontal">
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-cubes"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Nombre" [(ngModel)]="objAAgregar.nombre">
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group row">
+              <label class="col-md-3 form-control-label" for="select">Categoría</label>
+              <div class="col-md-9">
+                <select id="select" name="select" class="form-control" [(ngModel)]="objAAgregar.categoria_id" >
+                  <option *ngFor="let categoria of categorias" [value]="categoria.id">{{categoria.nombre}}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- <div class="col-md-4">
+                <div class="form-group form-black label-floating">
+                    <label class="labels">Cartera:</label>
+                    <select name="cartera_id" formControlName="cartera_id" class="form-control" (change)="getTicket($event)">
+                        <option *ngFor="let title of carteras" [value]="title.id">{{title.numero}} {{title.descripcion}}</option>
+                    </select>
+                </div>
+            </div> -->
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                  <input type="text" id="input2-group1" name="input2-group1" class="form-control" placeholder="Costo" [(ngModel)]="objAAgregar.costo">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-tasks"></i></span>
+                  <input type="text" id="input3-group1" name="input3-group1" class="form-control" placeholder="Cantidad" [(ngModel)]="objAAgregar.cantidad">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-bullseye"></i></span>
+                  <input type="text" id="input4-group1" name="input4-group1" class="form-control" placeholder="Unidad" [(ngModel)]="objAAgregar.unidad">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
+                    <!-- app.component.html -->
+                    <input type="file"
+                           ngFileSelect
+                           [options]="options"
+                           (onUpload)="handleUpload($event)"
+                           (beforeUpload)="beforeUpload($event)">
+                     
+                    <!-- drag & drop file example-->
+                    <style>
+                      .file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
+                    </style> 
+                    <div ngFileDrop
+                         [options]="options"
+                         (onUpload)="handleUpload($event)"
+                         [ngClass]="{'file-over': hasBaseDropZoneOver}"
+                         (onFileOver)="fileOverBase($event)"
+                         (beforeUpload)="beforeUpload($event)">
+                    </div>
+                     
+                    <!-- <div>
+                      Response: {{ uploadFile | json }}
+                    </div> -->
+                </div>
+
+                <div *ngIf="subiendoImg">
+                 <i class="fa fa-spinner fa-spin"></i>Cargando...
+                </div>
+
+                <div *ngIf="uploadFile">
+                      <img src = "{{objAAgregar.imagen}}" alt="" height="160px">
+                </div>
+
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          <button type="submit" class="btn btn-sm btn-success" (click)="crear()"><i class="fa fa-dot-circle-o"></i> Crear</button>
+          <!-- <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button> -->
+          
+        </div>
+      </div>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+
+<div class="my-container">
+    <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+</div> 
+
+<!-- <div class="my-container">
+  <ngx-loading [show]="true" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+</div> -->
+

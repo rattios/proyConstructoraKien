@@ -24,7 +24,7 @@ class Producto extends Model
      *
      * @var array
      */
-    protected $fillable = ['nombre', 'imagen', 'costo', 'cantidad',
+    protected $fillable = ['nombre', 'estado', 'imagen', 'costo', 'cantidad',
      'unidad', 'categoria_id'];
 
     /**
@@ -34,10 +34,17 @@ class Producto extends Model
      */
     //protected $hidden = [];
 
-    // Relación de servicio con categorias:
+    // Relación de producto con categorias:
     public function categoria()
     {
         // 1 producto pertenece a una categoria
         return $this->belongsTo('App\Categoria', 'categoria_id');
+    }
+
+    // Relación de productos con pedidos:
+    public function pedidos(){
+        // 1 producto puede estar en muchos pedidos
+        return $this->belongsToMany('\App\Pedido','pedido_productos','producto_id','pedido_id')
+            ->withPivot('cantidad','precio')->withTimestamps(); 
     }
 }

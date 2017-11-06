@@ -19,6 +19,8 @@ class ProductoController extends Controller
         //cargar todos los productos
         $productos = \App\Producto::all();
 
+        //$productos = \App\Producto::with('pedidos')->get();
+
         if(count($productos) == 0){
             return response()->json(['error'=>'No existen productos.'], 404);          
         }else{
@@ -83,10 +85,27 @@ class ProductoController extends Controller
             return response()->json(['error'=>'Ya existe un producto con el nombre '.$request->input('nombre').' en la categoria con id '.$categoria_id], 409);
         }
 
-        //Creamos el producto asociado a la categoria
-        $producto = $categoria->productos()->create($request->all());
+        if ($categoria->estado == 'ON') {
+            $estado_producto = 'ON';
+        }
+        else{
+            $estado_producto = 'OFF';
+        }
 
-        return response()->json(['status'=>'ok', 'producto'=>$producto], 200);
+        //Creamos el producto asociado a la categoria
+        //$producto = $categoria->productos()->create($request->all());
+        $producto = $categoria->productos()->create(['nombre' => $request->input('nombre'),
+            'estado' => $estado_producto,
+            'imagen' => $request->input('imagen'),
+            'costo' => $request->input('costo'),
+            'cantidad' => $request->input('cantidad'),
+            'unidad' => $request->input('unidad')]);
+
+        //Cargar la categoria antes de enviar el producto creado
+        $producto->categoria = $producto->categoria;
+
+        return response()->json(['status'=>'ok', 'message'=>'Producto creado con exito.',
+                 'producto'=>$producto], 200);
         
     }
 
@@ -153,10 +172,12 @@ class ProductoController extends Controller
 
         // Listado de campos recibidos teóricamente.
         $nombre=$request->input('nombre');
+        $estado=$request->input('estado');
         $imagen=$request->input('imagen');
         $costo=$request->input('costo');
         $cantidad=$request->input('cantidad');
         $unidad=$request->input('unidad');
+        $categoria_id=$request->input('categoria_id');
 
         // Creamos una bandera para controlar si se ha modificado algún dato.
         $bandera = false;
@@ -166,6 +187,21 @@ class ProductoController extends Controller
         {
             $producto->nombre = $nombre;
             $bandera=true;
+        }
+
+        if ($estado != null && $estado!='')
+        {
+            /*$cat = $producto->categoria;
+            
+            if ($cat->estado == 'ON') {
+                $producto->estado = $estado;
+            }
+
+            $bandera=true;*/
+
+            $producto->estado = $estado;
+            $bandera=true;
+            
         }
 
         if ($imagen != null && $imagen!='')
@@ -192,11 +228,34 @@ class ProductoController extends Controller
             $bandera=true;
         }
 
+        if ($categoria_id != null && $categoria_id !='')
+         {
+            // Comprobamos si la categoria que nos están pasando existe o no.
+            $categoria=\App\Categoria::find($categoria_id);
+
+            if (count($categoria)==0)
+            {
+                // Devolvemos error codigo http 404
+                return response()->json(['error'=>'No existe la categoría con id '.$categoria_id], 404);
+            }else{
+                if ($categoria->estado == 'ON') {
+                    $producto->estado = 'ON';
+                }
+                else{
+                    $producto->estado = 'OFF';
+                }
+            }
+
+            $producto->categoria_id = $categoria_id;
+            $bandera=true;
+        }
+
         if ($bandera)
         {
             // Almacenamos en la base de datos el registro.
             if ($producto->save()) {
-                return response()->json(['status'=>'ok','producto'=>$producto], 200);
+                return response()->json(['status'=>'ok', 'message'=>'Producto editado con exito.',
+                        'producto'=>$producto], 200);
             }else{
                 return response()->json(['error'=>'Error al actualizar el producto.'], 500);
             }
@@ -224,6 +283,14 @@ class ProductoController extends Controller
         if(count($producto)==0){
             return response()->json(['error'=>'No existe el producto con id '.$id], 404);          
         } 
+
+        $pedidos = $producto->pedidos;
+
+        if (sizeof($pedidos) > 0)
+        {
+            // Devolvemos un código 409 Conflict. 
+            return response()->json(['error'=>'Este producto posee relaciones y no puede ser eliminado.'], 409);
+        }
 
         // Eliminamos el producto si no tiene relaciones.
         $producto->delete();
