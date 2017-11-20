@@ -5,8 +5,8 @@
 	<title>Document</title>
 </head>
 <body>
-	<p><strong>Código de verificacion: </strong>{!!$codigo_verificacion!!}</p>
+	<p><strong>Código de verificación: </strong>{!!$codigo_verificacion!!}</p>
 	<br>
-	<p>Saludos cordiales, el equipo de Manappger.</p>
+	<p>Saludos cordiales, el equipo de Constructora Kien.</p>
 </body>
 </html>

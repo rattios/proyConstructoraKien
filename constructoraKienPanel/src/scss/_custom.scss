@@ -1,1 +1,12 @@
 // Here you can add other styles
+
+//Titulos de las rutas
+.breadcrumb-item.active {
+    color: #536c79 !important;
+    font-size: 20px;
+}
+
+//Loading
+.backdrop[_ngcontent-c1]{
+	position: fixed !important;
+}

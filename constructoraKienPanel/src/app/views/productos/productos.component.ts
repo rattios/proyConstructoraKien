@@ -8,14 +8,18 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { RutaBaseService } from '../../services/ruta-base.service';
 
+import { FormBuilder, FormArray, FormGroup, Validators  } from '@angular/forms';
+
+import {NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
+
 @Component({
-  selector: 'app-p',
+  selector: 'app-productos',
   templateUrl: 'productos.component.html',
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
+  styleUrls : ['productos.css']
 })
 
 export class ProductosComponent {
-
   /*Modal automatica
   @ViewChild('autoShownModal') public autoShownModal:ModalDirective;
   public isModalShown:boolean = true;
@@ -65,7 +69,53 @@ export class ProductosComponent {
 
   public subiendoImg = false;
 
-    constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService) {
+  //Formularios
+  myFormAgregar: FormGroup;
+  myFormEditar: FormGroup;
+
+  public admin = false;
+
+    constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService, public fb: FormBuilder, private permissionsService: NgxPermissionsService) {
+
+      /*if (localStorage.getItem('constructora_user_tipo') != '0') {
+          this.router.navigate(['dashboard']);
+      }*/
+
+      if (localStorage.getItem('constructora_user_tipo') == '0') {
+
+      const perm = ["SUPER"];
+      this.permissionsService.flushPermissions();
+      this.permissionsService.loadPermissions(perm);
+
+      //console.log('soy SUPER');
+      }
+      else if (localStorage.getItem('constructora_user_tipo') == '2') {
+        const perm2 = ["ADMIN"];
+        this.permissionsService.flushPermissions();
+        this.permissionsService.loadPermissions(perm2);
+        this.admin = true;
+
+        //console.log('soy ADMIN');
+      }
+      
+      this.myFormAgregar = this.fb.group({
+        nombre: ['', [Validators.required]],
+        imagen: ['', [Validators.required]],
+        costo: ['', [Validators.required]],
+        cantidad: [1],
+        unidad: ['', [Validators.required]],
+        categoria_id: ['', [Validators.required]]
+      });
+
+      this.myFormEditar = this.fb.group({
+        id: [''],
+        nombre: ['', [Validators.required]],
+        imagen: ['', [Validators.required]],
+        costo: ['', [Validators.required]],
+        cantidad: [1],
+        unidad: ['', [Validators.required]],
+        categoria_id: ['', [Validators.required]]
+      });
 
     }
 
@@ -121,7 +171,7 @@ export class ProductosComponent {
     }
 
     getCategorias(): void {
-      this.http.get(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias?token='+localStorage.getItem('constructora_token'))
+      this.http.get(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/habilitadas?token='+localStorage.getItem('constructora_token'))
       //this.http.get('http://constructorakien.internow.com.mx/constructoraKienAPI/public/categorias?token='+localStorage.getItem('constructora_token'))
          .toPromise()
          .then(
@@ -145,7 +195,7 @@ export class ProductosComponent {
                   this.mostrar = false;
 
               }
-              //sin categorias
+              //sin categorias o todas deshabilitadas OFF
               else if(msg.status == 404){ 
                   //alert(msg.error.error);
 
@@ -164,10 +214,22 @@ export class ProductosComponent {
       this.router.navigate(['pages']);
     }
 
+    cerrarAlerta(): void {
+      this.alerta = false
+    }
+
     aEditar(obj): void {
       this.editando = true;
-      this.objAEditar = obj;
+      this.objAEditar = Object.assign({},obj);
       console.log(this.objAEditar);
+
+      this.myFormEditar.patchValue({id : this.objAEditar.id});
+      this.myFormEditar.patchValue({nombre : this.objAEditar.nombre});
+      this.myFormEditar.patchValue({imagen : this.objAEditar.imagen});
+      this.myFormEditar.patchValue({costo : this.objAEditar.costo});
+      //this.myFormEditar.patchValue({cantidad : this.objAEditar.cantidad});
+      this.myFormEditar.patchValue({unidad : this.objAEditar.unidad});
+      this.myFormEditar.patchValue({categoria_id : this.objAEditar.categoria_id});
     }
 
     atras(): void {
@@ -184,6 +246,8 @@ export class ProductosComponent {
       this.objAAgregar.categoria_id = null;
 
       this.uploadFile = null;
+      this.myFormAgregar.reset();
+      this.myFormAgregar.reset();
 
       //this.init();
     }
@@ -268,16 +332,23 @@ export class ProductosComponent {
     }
 
     agregar(): void {
-      this.agregando = true;  
+      if(this.categorias){
+        this.agregando = true;
+      }else{
+        this.alerta_tipo = 'danger';
+        this.alerta_msg = 'No hay categorías habilitadas para la creación de productos.';
+        this.alerta = true;
+        setTimeout(()=>{this.alerta = false;},4000);
+      }   
     }
 
     crear(): void {
-      console.log(this.objAAgregar);
+      console.log(this.myFormAgregar.value);
       
       var imgAux: any;
       
       if(this.uploadFile){
-        imgAux = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        imgAux = this.myFormAgregar.value.imagen;
         //imgAux = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;        
       }
       else{
@@ -288,15 +359,15 @@ export class ProductosComponent {
 
       var datos= {
         token: localStorage.getItem('constructora_token'),
-        nombre: this.objAAgregar.nombre,
-        imagen: imgAux,
-        costo: this.objAAgregar.costo, 
-        cantidad: this.objAAgregar.cantidad, 
-        unidad: this.objAAgregar.unidad, 
-        categoria_id: this.objAAgregar.categoria_id 
+        nombre: this.myFormAgregar.value.nombre,
+        imagen: this.myFormAgregar.value.imagen,
+        costo: this.myFormAgregar.value.costo, 
+        cantidad: 1, 
+        unidad: this.myFormAgregar.value.unidad, 
+        categoria_id: this.myFormAgregar.value.categoria_id 
       }
 
-      this.http.post(this.rutaService.getRutaApi()+'constructoraKienAPI/public/productos/'+this.objAAgregar.categoria_id, datos)
+      this.http.post(this.rutaService.getRutaApi()+'constructoraKienAPI/public/productos/'+this.myFormAgregar.value.categoria_id, datos)
       //this.http.post('http://constructorakien.internow.com.mx/constructoraKienAPI/public/productos/'+this.objAAgregar.categoria_id, datos)
          .toPromise()
          .then(
@@ -322,6 +393,9 @@ export class ProductosComponent {
               this.alerta_msg = this.data.message;
               this.alerta = true;
               setTimeout(()=>{this.alerta = false;},4000);
+
+              this.uploadFile = null;
+              this.myFormAgregar.reset();
   
            },
            msg => { // Error
@@ -357,23 +431,23 @@ export class ProductosComponent {
       var imgAux: any;
       
       if(this.uploadFile){
-        imgAux = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName; 
+        imgAux = this.myFormEditar.value.imagen; 
         //imgAux = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;        
       }
       else{
-        imgAux = this.objAEditar.imagen;
+        imgAux = this.myFormEditar.value.imagen;
       }
       
       this.loading = true;
 
       var datos= {
         token: localStorage.getItem('constructora_token'),
-        nombre: this.objAEditar.nombre,
-        imagen: imgAux,
-        costo: this.objAEditar.costo, 
-        cantidad: this.objAEditar.cantidad, 
-        unidad: this.objAEditar.unidad, 
-        categoria_id: this.objAEditar.categoria_id 
+        nombre: this.myFormEditar.value.nombre,
+        imagen: this.myFormEditar.value.imagen,
+        costo: this.myFormEditar.value.costo, 
+        cantidad: 1, 
+        unidad: this.myFormEditar.value.unidad, 
+        categoria_id: this.myFormEditar.value.categoria_id 
       }
 
       this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/productos/'+this.objAEditar.id, datos)
@@ -385,22 +459,25 @@ export class ProductosComponent {
               this.data = data;
 
               for (var i = 0; i < this.productList.length; ++i) {
-                if (this.productList[i].id == this.objAEditar.id) {
-                   this.productList[i].nombre = this.objAEditar.nombre;
-                   this.productList[i].imagen = imgAux;
-                   this.productList[i].costo = this.objAEditar.costo;
-                   this.productList[i].cantidad = this.objAEditar.cantidad;
-                   this.productList[i].unidad = this.objAEditar.unidad;
-                   this.productList[i].categoria_id = this.objAEditar.categoria_id;
+                if (this.productList[i].id == this.myFormEditar.value.id) {
+                   this.productList[i].nombre = this.myFormEditar.value.nombre;
+                   this.productList[i].imagen = this.myFormEditar.value.imagen;
+                   this.productList[i].costo = this.myFormEditar.value.costo;
+                   this.productList[i].cantidad = this.myFormEditar.value.cantidad;
+                   this.productList[i].unidad = this.myFormEditar.value.unidad;
+                   this.productList[i].categoria_id = this.myFormEditar.value.categoria_id;
 
-                   for (var j = 0; j < this.categorias.length; ++j) {
-                     if (this.objAEditar.categoria_id == this.categorias[j].id ) {
-                       this.productList[i].categoria.id = this.categorias[j].id;
-                       this.productList[i].categoria.nombre = this.categorias[j].nombre;
-                       this.productList[i].categoria.estado = this.categorias[j].estado;
-                       this.productList[i].estado = this.categorias[j].estado;
+                   if (this.categorias) {
+                     for (var j = 0; j < this.categorias.length; ++j) {
+                       if (this.myFormEditar.value.categoria_id == this.categorias[j].id ) {
+                         this.productList[i].categoria.id = this.categorias[j].id;
+                         this.productList[i].categoria.nombre = this.categorias[j].nombre;
+                         this.productList[i].categoria.estado = this.categorias[j].estado;
+                         //this.productList[i].estado = this.categorias[j].estado;
+                       }
                      }
-                   }  
+                   }
+                     
                 }
               }
 
@@ -537,9 +614,15 @@ export class ProductosComponent {
             for (var i = 0; i < this.productList.length; ++i) {
               if (this.productList[i].nombre.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
                  this.filteredItems.push(this.productList[i]);
-              }/*else if (this.productList[i].id.indexOf(this.inputName)>=0) {
+              }else if (this.productList[i].categoria.nombre.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
                  this.filteredItems.push(this.productList[i]);
-              }*/
+              }else if (this.productList[i].costo.toString().indexOf(this.inputName)>=0) {
+                 this.filteredItems.push(this.productList[i]);
+              }/*else if (this.productList[i].cantidad.toString().indexOf(this.inputName)>=0) {
+                 this.filteredItems.push(this.productList[i]);
+              }*/else if (this.productList[i].unidad.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
+                 this.filteredItems.push(this.productList[i]);
+              }
             }
 
             // this.productList.forEach(element => {
@@ -606,9 +689,10 @@ export class ProductosComponent {
       if (data && data.response) {
         data = JSON.parse(data.response);
         this.uploadFile = data;
-        this.objAAgregar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
-        this.objAEditar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
-        //this.objAAgregar.imagen = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;
+        //this.objAAgregar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        this.myFormAgregar.patchValue({imagen : this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName});
+        //this.objAEditar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        this.myFormEditar.patchValue({imagen : this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName});
       }
     }
    

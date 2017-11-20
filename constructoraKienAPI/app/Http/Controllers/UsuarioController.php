@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
+//use Illuminate\Support\Facades\DB;
 use Hash;
+use DB;
 
 class UsuarioController extends Controller
 {
@@ -19,7 +20,7 @@ class UsuarioController extends Controller
     public function index()
     {
         //cargar todos los usuarios
-        $usuarios = \App\User::all();
+        $usuarios = \App\User::where('tipo', 1)->get();
 
         if(count($usuarios) == 0){
             return response()->json(['error'=>'No existen usuarios.'], 404);          
@@ -30,9 +31,14 @@ class UsuarioController extends Controller
 
     public function usuariosClientesPedidos()
     {
-        //cargar todos los usuarios clientes con sus pedidos
+        //cargar todos los usuarios clientes con sus pedidos del dia actual
         //$usuarios = \App\User::all();
-        $usuarios = \App\User::where('tipo',1)->with('pedidos')->get();
+        $usuarios = \App\User::where('tipo',1)->with(['pedidos' => function ($query) {
+            $query->where(DB::raw('DAY(created_at)'),DB::raw('DAY(now())'))
+            ->where(DB::raw('MONTH(created_at)'),DB::raw('MONTH(now())'))
+            ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
+            ->with('productos')->orderBy('id', 'desc');
+        }])->get();
 
         if(count($usuarios) == 0){
             return response()->json(['error'=>'No existen usuarios clientes.'], 404);          
@@ -305,6 +311,19 @@ class UsuarioController extends Controller
         {
             // Devolvemos error codigo http 404
             return response()->json(['error'=>'No existe el usuario con id '.$id], 404);
+        }
+
+        $pedidos = $usuario->pedidos;
+
+        if (sizeof($pedidos) > 0)
+        {
+            for ($i=0; $i < count($pedidos); $i++) { 
+                //Eliminar las relaciones(productos) en la tabla pivote
+                $pedidos[$i]->productos()->detach();
+
+                // Eliminamos el pedido.
+                $pedidos[$i]->delete();
+            }
         }
 
         // Eliminamos el usuario.

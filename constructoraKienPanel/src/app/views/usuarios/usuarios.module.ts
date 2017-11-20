@@ -13,8 +13,28 @@ import { LoadingModule, ANIMATION_TYPES  } from 'ngx-loading';
 
 //import { BsModalModule } from 'ng2-bs3-modal';
 
+import { Ng2UploaderModule } from 'ng2-uploader';
+
+//import { HttpClientModule } from '@angular/common/http';
+
+import { AlertModule } from 'ngx-bootstrap/alert';
+
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { AgmCoreModule } from '@agm/core';
+
+import { NgxPermissionsModule } from 'ngx-permissions';
+
 @NgModule({
   imports: [
+    NgxPermissionsModule.forRoot(),
+    AgmCoreModule.forRoot({
+        apiKey: 'AIzaSyA-jqEhc9PPkdmpvjqcNnppOFLj8brNIEQ'
+      }),
+    ReactiveFormsModule,
+    AlertModule.forRoot(),
+    //HttpClientModule,
+    Ng2UploaderModule,
     //BsModalModule,
   	UsuariosRoutingModule,
   	CommonModule ,

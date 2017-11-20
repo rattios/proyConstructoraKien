@@ -1,3 +1,16 @@
+<div class="alertaC" *ngIf="alerta">
+  <alert  [type]="alerta_tipo" dismissible="true" close="cerrarAlerta()">
+    <strong>{{alerta_msg}}</strong> 
+  </alert>
+</div>
+
+<div class="alertaC" *ngIf="alerta_boton">
+  <alert [type]="alerta_tipo" >
+    <strong>{{alerta_msg}}</strong>
+    <button type="button" class="btn btn4 btn-secondary" (click)="ok_alerta()">ok</button> 
+  </alert>
+</div>
+
 <div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -8,30 +21,27 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>¿Realmente desea eliminar al usuario {{eliminar_user}}?</p>
+        <p>¿Realmente desea eliminar el usuario {{eliminar_user}}?</p>
+        <p><i class="fa fa-warning"></i> Se eliminará el usuario y sus pedidos.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="myModal.hide()">Close</button>
-        <button type="button" class="btn btn-danger" (click)="eliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+        <button type="button" class="btn btn4 btn-secondary" (click)="myModal.hide()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="myModal.hide(); eliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div *ngIf="!selectedCliente">
+<div class="animated fadeIn" *ngIf="!editando && mostrar">
   <div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
+    <div class="col-md-12">
       <div class="card">
         <div class="row">
           <div class="col-md-12">
             <div class="card-header">
               <div class="row">
-                <div class="col-md-6">
-                  <strong>Lista de usuarios: </strong>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group" style="text-align: right;">
+                <div class="col-md-12">
+                  <div class="form-group" style="text-align: right; margin-top: 7px;">
                    <strong>Buscar: </strong>
                    <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
                    <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
@@ -43,24 +53,28 @@
               <table class="table table-striped">
                 <thead>
                    <th></th>
-                   <th style="text-align: center;">ID</th>
+                   <!-- <th style="text-align: center;">ID</th> -->
                    <th style="text-align: center;">Usuario</th>
                    <th style="text-align: center;">Nombre</th>
                    <th style="text-align: center;">Correo</th>
                    <th style="text-align: center;">Teléfono</th>
+                   <th style="text-align: center;">Alta</th>
+                   <th style="text-align: center;">Pedidos(Hoy)</th>
                    <th style="text-align: center;">Acciones</th>
                 </thead>
                 <tbody>
                    <tr *ngFor="let item of items" >
                       <td></td>
-                      <td style="text-align: center;">{{item.id}}</td>
+                      <!-- <td style="text-align: center;">{{item.id}}</td> -->
                       <td style="text-align: center;">{{item.user}}</td>
                       <td style="text-align: center;">{{item.nombre}}</td>
                       <td style="text-align: center;">{{item.correo}}</td>
                       <td style="text-align: center;">{{item.telefono}}</td>
+                      <td style="text-align: center;">{{item.fecha}}</td>
+                      <td style="text-align: center;">{{item.pedidos.length}}</td>
                       <td style="text-align: center;">
-                        <button type="button" class="btn btn-info" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" (click)="myModal.show(); aEliminar(item)"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+                        <button type="button" class="btn btn2 btn-primary" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
+                        <button *ngxPermissionsOnly="['SUPER']" type="button" class="btn btn-danger" data-toggle="modal" (click)="myModal.show(); aEliminar(item)"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
                       </td>
                    </tr>
                 </tbody>
@@ -84,14 +98,12 @@
         </div>
       </div>
     </div>
-    <div class="col-md-1"></div>
   </div>
 </div>
 
-<div *ngIf="selectedCliente">
+<div class="animated fadeIn" *ngIf="editando">
   <div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-10">
+    <!-- <div class="col-md-10" style="display:block; margin:auto">
       <div class="card">
         <div class="card-header">
           <strong>Detelle de:</strong> {{selectedCliente.user}}
@@ -133,13 +145,150 @@
           </form>
         </div>
         <div class="card-footer">
-          <button type="submit" class="btn btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          <button class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
           
         </div>
       </div>
-    </div>
-    <div class="col-md-1"></div>
+    </div> -->
+
+    <div class="col-md-12">
+      <div class="card card-accent-primary">
+        <div class="card-header">
+          <strong><i class="icon-user"></i> Usuario</strong>
+        </div>
+        <div class="card-body">
+          <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+            <div class="form-group row grupos">
+              <label class="col-md-3 form-control-label etiquetas">User</label>
+              <div class="col-md-9">
+                <p class="form-control-static">{{selectedCliente.user}}</p>
+              </div>
+
+              <label class="col-md-3 form-control-label etiquetas">Nombre</label>
+              <div class="col-md-9">
+                <p class="form-control-static">{{selectedCliente.nombre}}</p>
+              </div>
+
+              <label class="col-md-3 form-control-label etiquetas">Correo</label>
+              <div class="col-md-9">
+                <p class="form-control-static">{{selectedCliente.correo}}</p>
+              </div>
+
+              <label class="col-md-3 form-control-label etiquetas">Teléfono</label>
+              <div class="col-md-9">
+                <p class="form-control-static">{{selectedCliente.telefono}}</p>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+        </div>
+      </div>
+    </div><!--/.col-->
   </div>
+
+  <div *ngFor="let pedido of selectedCliente.pedidos; let i=index" >
+    <div class="row">
+      <div class="col-md-12" style="display:block; margin:auto">
+        <div class="card">
+          <div class="card-header">
+            <strong>Pedido {{i+1}}:</strong>
+            <div class="pull-right" style="margin-right: 50px">
+              <strong>Fecha: {{pedido.created_at | date:'dd/MM/yyyy'}}</strong>
+              <strong>- Hora: {{pedido.created_at | date:'HH:mm:ss'}}</strong>
+          </div>
+          </div>
+          <div class="card-body">
+              <div class="row">
+              <div class="col-md-12">
+                <div class="card card-accent-success">
+                  <div class="card-header">
+                    <strong><i class="icon-direction"></i>  Referencias</strong>
+                  </div>
+                  <div class="card-body">
+                    <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                      <div class="form-group row grupos">
+                        <label class="col-md-3 form-control-label etiquetas">Dirección</label>
+                        <div class="col-md-9">
+                          <p class="form-control-static">{{pedido.direccion}}</p>
+                        </div>
+
+                        <label *ngIf="pedido.descripcion" class="col-md-3 form-control-label etiquetas">Descripción</label>
+                        <div *ngIf="pedido.descripcion" class="col-md-9">
+                          <p class="form-control-static">{{pedido.descripcion}}</p>
+                        </div>
+
+                        <label *ngIf="pedido.referencia" class="col-md-3 form-control-label etiquetas">Referencia</label>
+                        <div *ngIf="pedido.referencia" class="col-md-9">
+                          <p class="form-control-static">{{pedido.referencia}}</p>
+                        </div>
+                      </div>
+
+                      <div *ngIf="pedido.lat && pedido.lng">
+                        <!-- <strong>Aqui el mapa</strong> -->
+                        <agm-map style="height: 300px;" [zoom]="13" [latitude]="pedido.lat" [longitude]="pedido.lng">
+                            <agm-marker style="height: 300px;" [latitude]="pedido.lat" [longitude]="pedido.lng"></agm-marker>
+                        </agm-map>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+              </div><!--/.col-->
+              
+              <div class="col-md-12">
+                <div class="card card-accent-danger">
+                  <div class="card-header">
+                    <strong><i class="icon-basket-loaded"></i>  Productos Solicitados</strong>
+                  </div>
+                  <div class="card-body">
+                    <!-- <div class="table-responsive"></div> -->
+                    <table class="table table-sm">
+                      <thead >
+                        <tr>
+                          <th class="text-center">Imagen</th>
+                          <th class="text-center">Producto</th>
+                          <th class="text-center">Unidad</th>
+                          <th class="text-center">Solicitados</th>
+                          <th class="text-center">Sub-total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of pedido.productos">
+                          <td class="text-center">
+                            <img src = "{{item.imagen}}" alt="" height="auto" width="60px"></td>
+                          <td class="text-center">
+                            {{item.nombre}}
+                          </td>
+                          <td class="text-center">
+                            {{item.unidad}}
+                          </td>
+                          <td class="text-center">
+                            {{item.pivot.cantidad}}
+                          </td>
+                          <td class="text-center">
+                            {{item.pivot.precio}}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="card-footer">
+                    <div class="pull-right" style="margin-right: 50px"><strong>Total: $ {{pedido.total}} MXN</strong></div>
+                  </div>
+                </div>
+              </div><!--/.col-->
+            </div><!--/.row-->
+          </div>
+          <!-- <div class="card-footer">
+            <button  class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="my-container">

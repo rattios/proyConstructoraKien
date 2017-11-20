@@ -38,6 +38,14 @@ export const routes: Routes = [
         path: 'productos',
         loadChildren: './views/productos/productos.module#ProductosModule'
       },
+      {
+        path: 'pedidos',
+        loadChildren: './views/pedidos/pedidos.module#PedidosModule'
+      },
+      {
+        path: 'aplicacion',
+        loadChildren: './views/aplicacion/aplicacion.module#AplicacionModule'
+      },
     ]
   },
   {

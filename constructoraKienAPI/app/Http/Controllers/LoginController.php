@@ -49,7 +49,7 @@ class LoginController extends Controller
             }
 
             //En el panel solo se logean usuarios administradores
-            if ($user->tipo != 0) {
+            if ($user->tipo != 0 && $user->tipo != 2) {
                 return response()->json(['error' => 'Credenciales inválidas.'], 401);
             }
 

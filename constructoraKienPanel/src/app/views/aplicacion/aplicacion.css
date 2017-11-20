@@ -1,0 +1,51 @@
+.btn { 
+	background-color: #c71717 !important;
+	border: 1px solid  #c71717 !important;
+} 
+
+.btn2 { 
+	background-color: #424242 !important;
+	border: 1px solid  #424242 !important;
+} 
+
+/*switche*/
+.switch-primary > .switch-input:checked ~ .switch-label{
+	background: #28a745 !important;
+    border-color: #28a745;
+}
+
+.btn3{
+	background-color: #181e21  !important;
+	border: 1px solid  #181e21 !important;
+	margin-top: 4px;
+}
+
+.btn4{
+	background-color: #000000  !important;
+	border: 1px solid  #000000 !important;
+	color: #ffffff;
+}
+
+.alertaC{
+	position: fixed !important;
+    z-index: 999 !important;
+    top: 70px !important;
+    right: 10px !important;
+}
+
+.danger{
+	color: #c71717 !important;
+	font-weight: bold;
+	margin-top: 5px;
+}
+
+/*Loading*/
+.backdrop[_ngcontent-c1]{
+	position: fixed !important;
+}
+
+/*Paginacion de la tabla*/
+.pagination li.active a {
+	background-color: #29363d;
+    border-color: #29363d;
+}

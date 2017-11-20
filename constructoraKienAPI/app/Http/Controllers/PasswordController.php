@@ -40,7 +40,7 @@ class PasswordController extends Controller
             //$salt = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
             // Para cuando deseas que la cadena este compuesta por letras y numeros
-            $salt = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+            $salt = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 
             $rand = '';
             $i = 0;
@@ -81,7 +81,7 @@ class PasswordController extends Controller
         $obj = \App\User::where('codigo_verificacion', $codigo)->get();
 
         if(count($obj)==0){
-            return response()->json(['error'=>'No existe el cliente con el codigo '.$codigo], 404);          
+            return response()->json(['error'=>'No existe el cliente con el código '.$codigo], 404);          
         }else{
 
             $cliente = $obj[0];
@@ -96,7 +96,7 @@ class PasswordController extends Controller
                 $minDiff = $cliente->updated_at->diff($fechaActual)->i;
 
                 /*Si es menor a 5 min se da acceso*/
-                if ($minDiff <= 1) {
+                if ($minDiff <= 5) {
 
                     if (!$token = JWTAuth::fromUser($cliente)) {
                         return response()->json(['error' => 'could_not_create_token'], 401);
@@ -117,7 +117,7 @@ class PasswordController extends Controller
                 }
 
             }else{
-                return response()->json(['error'=>'No existe el cliente con el codigo '.$codigo], 404);
+                return response()->json(['error'=>'No existe el cliente con el código '.$codigo], 404);
             }
             
         }

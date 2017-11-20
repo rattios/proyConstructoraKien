@@ -19,8 +19,14 @@ import { Ng2UploaderModule } from 'ng2-uploader';
 
 import { AlertModule } from 'ngx-bootstrap/alert';
 
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { NgxPermissionsModule } from 'ngx-permissions';
+
 @NgModule({
   imports: [
+    NgxPermissionsModule.forRoot(),
+    ReactiveFormsModule,
     AlertModule.forRoot(),
     //HttpClientModule,
     Ng2UploaderModule,

@@ -15,10 +15,10 @@ class PedidosMigration extends Migration
         Schema::create('pedidos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('direccion');
-            $table->string('descripcion');
-            $table->string('referencia');
-            $table->float('lat')->nullable();
-            $table->float('lng')->nullable();
+            $table->string('descripcion')->nullable();
+            $table->string('referencia')->nullable();
+            $table->string('lat')->nullable();
+            $table->string('lng')->nullable();
             $table->float('total'); //Total del pedido
             $table->integer('estado');
 

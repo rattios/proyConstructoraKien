@@ -8,17 +8,24 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 
 import { RutaBaseService } from '../../services/ruta-base.service';
 
+import { FormBuilder, FormArray, FormGroup, Validators  } from '@angular/forms';
+
+import {NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
+
 @Component({
-  selector: 'app-p',
+  selector: 'app-categorias',
   templateUrl: 'categorias.component.html',
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default,
+  styleUrls : ['categorias.css']
 })
 
 export class CategoriasComponent {
 
-  /*Modal automatica
+  
+
+  //Modal automatica
   @ViewChild('autoShownModal') public autoShownModal:ModalDirective;
-  public isModalShown:boolean = true;
+  public isModalShown:boolean = false;
  
   public showModal():void {
     this.isModalShown = true;
@@ -30,7 +37,7 @@ export class CategoriasComponent {
  
   public onHidden():void {
     this.isModalShown = false;
-  }*/
+  }
 
   private data:any;
   public productList:any;
@@ -59,9 +66,56 @@ export class CategoriasComponent {
 
   public subiendoImg = false;
 
-    constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService) {
+  //Formularios
+  myFormAgregar: FormGroup;
+  myFormEditar: FormGroup;
+
+  public productList2:any;
+
+  public habCategoria:any;
+
+  public catSelecAux:any;
+
+  public mostrarSwiches = true;
+
+  public admin = false;
+
+    constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService, public fb: FormBuilder, private permissionsService: NgxPermissionsService) {
+      
+      /*if (localStorage.getItem('constructora_user_tipo') != '0') {
+          this.router.navigate(['dashboard']);
+      }*/
+
+      if (localStorage.getItem('constructora_user_tipo') == '0') {
+
+      const perm = ["SUPER"];
+      this.permissionsService.flushPermissions();
+      this.permissionsService.loadPermissions(perm);
+
+      //console.log('soy SUPER');
+      }
+      else if (localStorage.getItem('constructora_user_tipo') == '2') {
+        const perm2 = ["ADMIN"];
+        this.permissionsService.flushPermissions();
+        this.permissionsService.loadPermissions(perm2);
+        this.admin = true;
+
+        //console.log('soy ADMIN');
+      }
+      
+      this.myFormAgregar = this.fb.group({
+        nombre: ['', [Validators.required]],
+        imagen: ['', [Validators.required]]
+      });
+
+      this.myFormEditar = this.fb.group({
+        id: [''],
+        nombre: ['', [Validators.required]],
+        imagen: ['', [Validators.required]]
+      });
 
     }
+
 
     ngOnInit(): void {
       this.loading = true;
@@ -117,10 +171,18 @@ export class CategoriasComponent {
       this.router.navigate(['pages']);
     }
 
+    cerrarAlerta(): void {
+      this.alerta = false
+    }
+
     aEditar(obj): void {
       this.editando = true;
-      this.objAEditar = obj;
+      this.objAEditar = Object.assign({},obj);
       console.log(this.objAEditar);
+
+      this.myFormEditar.patchValue({id : this.objAEditar.id});
+      this.myFormEditar.patchValue({nombre : this.objAEditar.nombre});
+      this.myFormEditar.patchValue({imagen : this.objAEditar.imagen});
     }
 
     atras(): void {
@@ -133,6 +195,8 @@ export class CategoriasComponent {
       this.objAAgregar.imagen = '';
 
       this.uploadFile = null;
+      this.myFormAgregar.reset();
+      this.myFormAgregar.reset();
     }
 
     aEliminar(obj): void {
@@ -219,14 +283,13 @@ export class CategoriasComponent {
     }
 
     crear(): void {
-      console.log(this.objAAgregar);
+      console.log(this.myFormAgregar.value);
       
       var imgAux: any;
       
       if(this.uploadFile){
-        imgAux = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
-        //imgAux = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;        
-      }
+        imgAux = this.myFormAgregar.value.imagen;
+        }
       else{
         imgAux = '';
       }
@@ -235,8 +298,8 @@ export class CategoriasComponent {
 
       var datos= {
         token: localStorage.getItem('constructora_token'),
-        nombre: this.objAAgregar.nombre,
-        imagen: imgAux
+        nombre: this.myFormAgregar.value.nombre,
+        imagen: this.myFormAgregar.value.imagen
       }
 
       this.http.post(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias', datos)
@@ -265,6 +328,9 @@ export class CategoriasComponent {
               this.alerta_msg = this.data.message;
               this.alerta = true;
               setTimeout(()=>{this.alerta = false;},4000);
+
+              this.uploadFile = null;
+              this.myFormAgregar.reset();
   
            },
            msg => { // Error
@@ -300,22 +366,22 @@ export class CategoriasComponent {
       var imgAux: any;
       
       if(this.uploadFile){
-        imgAux = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName; 
+        imgAux = this.myFormEditar.value.imagen; 
         //imgAux = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;        
       }
       else{
-        imgAux = this.objAEditar.imagen;
+        imgAux = this.myFormEditar.value.imagen;
       }
       
       this.loading = true;
 
       var datos= {
         token: localStorage.getItem('constructora_token'),
-        nombre: this.objAEditar.nombre,
-        imagen: imgAux
+        nombre: this.myFormEditar.value.nombre,
+        imagen: this.myFormEditar.value.imagen
       }
 
-      this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+this.objAEditar.id, datos)
+      this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+this.myFormEditar.value.id, datos)
       //this.http.put('http://constructorakien.internow.com.mx/constructoraKienAPI/public/categorias/'+this.objAEditar.id, datos)
          .toPromise()
          .then(
@@ -324,9 +390,9 @@ export class CategoriasComponent {
               this.data = data;
 
               for (var i = 0; i < this.productList.length; ++i) {
-                if (this.productList[i].id == this.objAEditar.id) {
-                   this.productList[i].nombre = this.objAEditar.nombre;
-                   this.productList[i].imagen = imgAux;
+                if (this.productList[i].id == this.myFormEditar.value.id) {
+                   this.productList[i].nombre = this.myFormEditar.value.nombre;
+                   this.productList[i].imagen = this.myFormEditar.value.imagen;
                 }
               }
 
@@ -371,6 +437,99 @@ export class CategoriasComponent {
          );
     }
 
+    apagarSwiche(): void{
+      //this.catSelecAux.estado = 'OFF';
+
+      /*for (var i = 0; i < this.items.length; ++i) {
+        if (this.items[i].id == this.catSelecAux.id) {
+          this.items[i].estado = 'OFF';
+        }
+      }*/
+
+      this.mostrarSwiches = true;
+
+    }
+
+    cambioSwicheCat(obj): void{
+      //console.log(obj.estado);
+
+      /*setTimeout(()=>{obj.estado = 'ON';
+        console.log(obj.estado);
+      },2000);
+
+      setTimeout(()=>{obj.estado = 'OFF';
+        console.log(obj.estado);
+      },4000);*/
+
+      this.catSelecAux = obj;
+
+      if (obj.estado == 'ON') {
+        //Apagando categoria
+        this.cambiarEstado(obj);
+      }else{
+        //Encendiendo categoria
+        this.cargarProductos(obj);
+      }
+    }
+
+    cargarProductos(obj): void {
+
+      this.loading = true;
+
+      this.http.get(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+obj.id+'/productos?token='+localStorage.getItem('constructora_token'))
+         .toPromise()
+         .then(
+           data => { // Success
+              console.log(data);
+              this.data=data;
+              this.productList2 = this.data.categoria.productos;
+              this.filteredItems2 = this.productList2;
+              //console.log(this.productList2);
+
+              this.init2();
+              
+              this.loading = false;
+
+              if (this.productList2.length == 0) {
+                //alert('La categoria no tiene productos');
+                //Se cambia solo el estado de la categoria
+                this.cambiarEstado(obj);
+              }else{
+                //alert('La categoria tiene '+this.productList2.length+' productos');
+                //Se muestra la modal para elgir los productos q se quieren habilitar junto con la categoria
+                this.habCategoria = obj;
+                this.showModal();
+                this.mostrarSwiches = false;
+              }
+           },
+           msg => { // Error
+             console.log(msg);
+             console.log(msg.error.error);
+
+             this.loading = false;
+
+             //token invalido/ausente o token expiro
+             if(msg.status == 400 || msg.status == 401){ 
+                  //alert(msg.error.error);
+                  //ir a login
+
+                  this.alerta_tipo = 'warning';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta_boton = true;
+              }
+              else { 
+                  //alert(msg.error.error);
+
+                  this.alerta_tipo = 'danger';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta = true;
+                  setTimeout(()=>{this.alerta = false;},4000);
+              }
+           }
+         );
+    }
+
+    //Para la categoria
     cambiarEstado(obj): void {
 
       var v_estado: any;
@@ -423,6 +582,97 @@ export class CategoriasComponent {
          );
     }
 
+    cambioSwicheProd(objProd): void {
+
+      if (objProd.estado == 'ON') {
+        objProd.estado = 'OFF';
+      }else{
+        objProd.estado = 'ON';
+      }
+
+    }
+
+
+    habilitarCat(): void{
+      //console.log(this.productList2);
+
+      //this.cambiarEstado(this.habCategoria);
+
+      //alert(JSON.stringify(this.productList2));
+
+      /*var auxProductos = [];
+
+      for (var i = 0; i < this.productList2.length; ++i) {
+        auxProductos.push(this.productList2[i]);
+      }
+
+      alert(JSON.stringify(auxProductos));*/
+
+      this.mostrarSwiches = true;
+
+      this.loading = true;
+
+      setTimeout(()=>{
+
+        var datos= {
+          token: localStorage.getItem('constructora_token'),
+          estado: 'ON',
+          productos: JSON.stringify(this.productList2)
+          //productos: JSON.stringify(auxProductos)
+          //productos: this.productos
+          //productos: JSON.stringify(this.productos)
+          //productos: '[{"id":1,"cantidad":3,"estado":"ON"},{"id":3,"cantidad":3,"estado":"OFF"}]'
+        }
+
+        this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+this.habCategoria.id, datos)
+           .toPromise()
+           .then(
+             data => { // Success
+                console.log(data);
+                this.data = data;
+
+                this.habCategoria.estado = 'ON';
+                //auxProductos = [];
+
+                this.loading = false;
+
+                this.alerta_tipo = 'success';
+                this.alerta_msg = this.data.message;
+                this.alerta = true;
+                setTimeout(()=>{this.alerta = false;},4000); 
+             },
+             msg => { // Error
+               console.log(msg);
+               console.log(msg.error.error);
+
+               this.loading = false;
+
+               //token invalido/ausente o token expiro
+               if(msg.status == 400 || msg.status == 401){ 
+                    //alert(msg.error.error);
+                    //ir a login
+
+                    this.alerta_tipo = 'warning';
+                    this.alerta_msg = msg.error.error;
+                    this.alerta_boton = true;
+                    this.mostrar = false;
+                }
+                else { 
+                    //alert(msg.error.error);
+
+                    this.alerta_tipo = 'danger';
+                    this.alerta_msg = msg.error.error;
+                    this.alerta = true;
+                    setTimeout(()=>{this.alerta = false;},4000);
+                }
+             }
+           );
+
+        },300);
+
+      
+    }
+
     
    //Tabla----<
    filteredItems : any;
@@ -459,9 +709,7 @@ export class CategoriasComponent {
             for (var i = 0; i < this.productList.length; ++i) {
               if (this.productList[i].nombre.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
                  this.filteredItems.push(this.productList[i]);
-              }/*else if (this.productList[i].id.indexOf(this.inputName)>=0) {
-                 this.filteredItems.push(this.productList[i]);
-              }*/
+              }
             }
 
             // this.productList.forEach(element => {
@@ -511,6 +759,97 @@ export class CategoriasComponent {
     }
     //Tabla---->
 
+   //Tabla2 Productos de la categoria X----<
+   filteredItems2 : any;
+   pages2 : number = 4;
+   pageSize2 : number = 5;
+   pageNumber2 : number = 0;
+   currentIndex2 : number = 1;
+   items2: any;
+   pagesIndex2 : Array<number>;
+   pageStart2 : number = 1;
+   inputName2 : string = '';
+
+   init2(){
+         this.currentIndex2 = 1;
+         this.pageStart2 = 1;
+         this.pages2 = 4;
+
+         this.pageNumber2 = parseInt(""+ (this.filteredItems2.length / this.pageSize2));
+         if(this.filteredItems2.length % this.pageSize2 != 0){
+            this.pageNumber2 ++;
+         }
+    
+         if(this.pageNumber2  < this.pages2){
+               this.pages2 =  this.pageNumber2;
+         }
+       
+         this.refreshItems2();
+         console.log("this.pageNumber2 :  "+this.pageNumber2);
+   }
+
+   FilterByName2(){
+      this.filteredItems2 = [];
+      if(this.inputName2 != ""){
+            for (var i = 0; i < this.productList2.length; ++i) {
+              if (this.productList2[i].nombre.toUpperCase().indexOf(this.inputName2.toUpperCase())>=0) {
+                 this.filteredItems2.push(this.productList2[i]);
+              }else if (this.productList2[i].costo.toString().indexOf(this.inputName2)>=0) {
+                 this.filteredItems2.push(this.productList2[i]);
+              }else if (this.productList2[i].cantidad.toString().indexOf(this.inputName2)>=0) {
+                 this.filteredItems2.push(this.productList2[i]);
+              }else if (this.productList2[i].unidad.toUpperCase().indexOf(this.inputName2.toUpperCase())>=0) {
+                 this.filteredItems2.push(this.productList2[i]);
+              }
+            }
+
+            // this.productList.forEach(element => {
+            //     if(element.nombre.toUpperCase().indexOf(this.inputName.toUpperCase())>=0){
+            //       this.filteredItems.push(element);
+            //    }
+            // });
+      }else{
+         this.filteredItems2 = this.productList2;
+      }
+      console.log(this.filteredItems2);
+      this.init2();
+   }
+   fillArray2(): any{
+      var obj = new Array();
+      for(var index = this.pageStart2; index< this.pageStart2 + this.pages2; index ++) {
+                  obj.push(index);
+      }
+      return obj;
+   }
+   refreshItems2(){
+       this.items2 = this.filteredItems2.slice((this.currentIndex2 - 1)*this.pageSize2, (this.currentIndex2) * this.pageSize2);
+       this.pagesIndex2 =  this.fillArray2();
+   }
+   prevPage2(){
+      if(this.currentIndex2>1){
+         this.currentIndex2 --;
+      } 
+      if(this.currentIndex2 < this.pageStart2){
+         this.pageStart2 = this.currentIndex2;
+      }
+      this.refreshItems2();
+   }
+   nextPage2(){
+      if(this.currentIndex2 < this.pageNumber2){
+            this.currentIndex2 ++;
+      }
+      if(this.currentIndex2 >= (this.pageStart2 + this.pages2)){
+         this.pageStart2 = this.currentIndex2 - this.pages2 + 1;
+      }
+ 
+      this.refreshItems2();
+   }
+    setPage2(index : number){
+         this.currentIndex2 = index;
+         this.refreshItems2();
+    }
+    //Tabla2 Productos de la categoria X---->
+
     //Subir imagen----<
     uploadFile: any;
     hasBaseDropZoneOver: boolean = false;
@@ -528,9 +867,11 @@ export class CategoriasComponent {
       if (data && data.response) {
         data = JSON.parse(data.response);
         this.uploadFile = data;
-        this.objAAgregar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
-        this.objAEditar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
-        //this.objAAgregar.imagen = 'http://constructorakien.internow.com.mx/images_uploads/uploads/'+this.uploadFile.generatedName;
+        //this.objAAgregar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        this.myFormAgregar.patchValue({imagen : this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName});
+        //this.objAEditar.imagen = this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName;
+        this.myFormEditar.patchValue({imagen : this.rutaService.getRutaImages()+'uploads/'+this.uploadFile.generatedName});
+        
       }
     }
    

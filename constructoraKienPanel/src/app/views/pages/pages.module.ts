@@ -18,7 +18,6 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { LoadingModule, ANIMATION_TYPES  } from 'ngx-loading';
 
-
 @NgModule({
   imports: [ 
   FormsModule,

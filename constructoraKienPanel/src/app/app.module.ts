@@ -7,6 +7,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
+
+
 // Import containers
 import {
   FullLayout,
@@ -68,9 +70,19 @@ import { LoadingModule, ANIMATION_TYPES  } from 'ngx-loading';
 
 import { RutaBaseService } from './services/ruta-base.service';
 
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { AgmCoreModule } from '@agm/core';
+
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 @NgModule({
   imports: [
+    NgxPermissionsModule.forRoot(),
+    AgmCoreModule.forRoot({
+        apiKey: 'AIzaSyA-jqEhc9PPkdmpvjqcNnppOFLj8brNIEQ'
+      }),
+    ReactiveFormsModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,

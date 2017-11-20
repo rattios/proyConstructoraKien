@@ -1,4 +1,5 @@
 import { Component, ElementRef } from '@angular/core';
+import {NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,7 @@ export class AppHeader {
 
   public usuario: string;
 
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef, private permissionsService: NgxPermissionsService) { }
 
   //wait for the component to render completely
   ngOnInit(): void {
@@ -27,6 +28,8 @@ export class AppHeader {
 
   logaut(): void {
       //alert('Saliendo...');
+      this.permissionsService.flushPermissions();
       localStorage.removeItem('constructora_token');
+      localStorage.removeItem('constructora_user_tipo');
     }
 }

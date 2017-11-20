@@ -27,13 +27,29 @@ class CategoriaController extends Controller
         
     }
 
-    public function categoriasProductos()
+    //Usada en el panel
+    public function categoriasHabilitadas()
     {
-        //cargar todas las cat con sus subcat
-        $categorias = \App\Categoria::with('productos')->get();
+        //cargar todas las cat en estado ON
+        $categorias = \App\Categoria::where('estado', 'ON')->get();
 
         if(count($categorias) == 0){
-            return response()->json(['error'=>'No existen categorías.'], 404);          
+            return response()->json(['error'=>'No existen categorías habilitadas.'], 404);          
+        }else{
+            return response()->json(['status'=>'ok', 'categorias'=>$categorias], 200);
+        } 
+        
+    }
+
+    public function categoriasProductos()
+    {
+        //cargar todas las cat con sus productos habilitados
+        $categorias = \App\Categoria::where('estado', 'ON')->with(['productos' => function ($query) {
+            $query->where('estado', 'ON');
+        }])->get();
+
+        if(count($categorias) == 0){
+            return response()->json(['error'=>'No hay categorías disponibles.'], 404);          
         }else{
             return response()->json(['status'=>'ok', 'categorias'=>$categorias], 200);
         } 
@@ -78,19 +94,19 @@ class CategoriaController extends Controller
         /*Primero creo una instancia en la tabla categorias*/
         $categoria = new \App\Categoria;
         $categoria->nombre = $request->input('nombre');
-        $categoria->estado = 'ON';
+        $categoria->estado = 'OFF';
         $categoria->imagen = $request->input('imagen');
 
 
         if($categoria->save()){
-           return response()->json(['status'=>'ok', 'message'=>'Categoría creada con exito.',
+           return response()->json(['status'=>'ok', 'message'=>'Categoría creada con éxito.',
              'categoria'=>$categoria], 200);
         }else{
             return response()->json(['error'=>'Error al crear la categoría.'], 500);
         }
 
         /*if($nuevaCategoria=\App\Categoria::create($request->all())){
-           return response()->json(['status'=>'ok','message'=>'Categoría creada con exito.',
+           return response()->json(['status'=>'ok','message'=>'Categoría creada con éxito.',
              'categoria'=>$nuevaCategoria], 200);
         }else{
             return response()->json(['error'=>'Error al crear la categoría.'], 500);
@@ -169,6 +185,7 @@ class CategoriaController extends Controller
         $nombre=$request->input('nombre');
         $estado=$request->input('estado');
         $imagen=$request->input('imagen');
+        $productos=$request->input('productos');
 
 
         // Creamos una bandera para controlar si se ha modificado algún dato.
@@ -192,13 +209,15 @@ class CategoriaController extends Controller
         if ($estado != null && $estado!='')
         {
 
-            $productos = $categoria->productos;
+            if ($estado == 'OFF') {
+                $productos = $categoria->productos;
 
-            if (sizeof($productos) > 0)
-            {
-                for ($i=0; $i < count($productos) ; $i++) { 
-                    $productos[$i]->estado = $estado;
-                    $productos[$i]->save();
+                if (sizeof($productos) > 0)
+                {
+                    for ($i=0; $i < count($productos) ; $i++) { 
+                        $productos[$i]->estado = $estado;
+                        $productos[$i]->save();
+                    }
                 }
             }
 
@@ -212,11 +231,33 @@ class CategoriaController extends Controller
             $bandera=true;
         }
 
+        if (sizeof($productos) > 0 /*$productos != null && $productos!=''*/)
+        {
+            $bandera=true;
+
+            $productos = json_decode($productos);
+            for ($i=0; $i < count($productos) ; $i++) {
+
+                if ($productos[$i]->estado == 'ON') {
+
+                    $producto = \App\Producto::find($productos[$i]->id);
+
+                    if(count($producto) == 0){
+                       // Devolvemos un código 409 Conflict. 
+                        return response()->json(['error'=>'No existe el producto con id '.$productos[$i]->id], 409);
+                    }else{
+                        $producto->estado = $productos[$i]->estado;
+                        $producto->save();
+                    }
+                }  
+            }
+        }
+
         if ($bandera)
         {
             // Almacenamos en la base de datos el registro.
             if ($categoria->save()) {
-                return response()->json(['status'=>'ok', 'message'=>'Categoría editada con exito.',
+                return response()->json(['status'=>'ok', 'message'=>'Categoría editada con éxito.',
                     'categoria'=>$categoria], 200);
             }else{
                 return response()->json(['error'=>'Error al actualizar la categoría.'], 500);
@@ -227,7 +268,7 @@ class CategoriaController extends Controller
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 304 Not Modified – [No Modificada] Usado cuando el cacheo de encabezados HTTP está activo
             // Este código 304 no devuelve ningún body, así que si quisiéramos que se mostrara el mensaje usaríamos un código 200 en su lugar.
-            return response()->json(['error'=>'No se ha modificado ningún dato la categoría.'],304);
+            return response()->json(['error'=>'No se ha modificado ningún dato la categoría.'],409);
         }
 
     }
@@ -254,7 +295,7 @@ class CategoriaController extends Controller
         if (sizeof($productos) > 0)
         {
             // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'Esta categoría posee relaciones y no puede ser eliminada.'], 409);
+            return response()->json(['error'=>'Esta categoría no puede ser eliminada porque posee productos asociados.'], 409);
         }
 
         // Eliminamos la categoria si no tiene relaciones.

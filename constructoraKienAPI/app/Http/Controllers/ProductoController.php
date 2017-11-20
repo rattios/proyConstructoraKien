@@ -41,7 +41,18 @@ class ProductoController extends Controller
         
     }
 
+    public function productosHabilitados()
+    {
+        //cargar todos los productos que estan en estado ON con su categoria
+        $productos = \App\Producto::where('estado', 'ON')->with('categoria')->get();
 
+        if(count($productos) == 0){
+            return response()->json(['error'=>'No hay productos disponibles.'], 404);          
+        }else{
+            return response()->json(['status'=>'ok', 'productos'=>$productos], 200);
+        } 
+        
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -104,7 +115,7 @@ class ProductoController extends Controller
         //Cargar la categoria antes de enviar el producto creado
         $producto->categoria = $producto->categoria;
 
-        return response()->json(['status'=>'ok', 'message'=>'Producto creado con exito.',
+        return response()->json(['status'=>'ok', 'message'=>'Producto creado con éxito.',
                  'producto'=>$producto], 200);
         
     }
@@ -191,17 +202,8 @@ class ProductoController extends Controller
 
         if ($estado != null && $estado!='')
         {
-            /*$cat = $producto->categoria;
-            
-            if ($cat->estado == 'ON') {
-                $producto->estado = $estado;
-            }
-
-            $bandera=true;*/
-
             $producto->estado = $estado;
-            $bandera=true;
-            
+            $bandera=true; 
         }
 
         if ($imagen != null && $imagen!='')
@@ -238,12 +240,10 @@ class ProductoController extends Controller
                 // Devolvemos error codigo http 404
                 return response()->json(['error'=>'No existe la categoría con id '.$categoria_id], 404);
             }else{
-                if ($categoria->estado == 'ON') {
-                    $producto->estado = 'ON';
-                }
-                else{
+                if ($categoria->estado == 'OFF') {
                     $producto->estado = 'OFF';
                 }
+                
             }
 
             $producto->categoria_id = $categoria_id;
@@ -254,7 +254,7 @@ class ProductoController extends Controller
         {
             // Almacenamos en la base de datos el registro.
             if ($producto->save()) {
-                return response()->json(['status'=>'ok', 'message'=>'Producto editado con exito.',
+                return response()->json(['status'=>'ok', 'message'=>'Producto editado con éxito.',
                         'producto'=>$producto], 200);
             }else{
                 return response()->json(['error'=>'Error al actualizar el producto.'], 500);
@@ -289,7 +289,7 @@ class ProductoController extends Controller
         if (sizeof($pedidos) > 0)
         {
             // Devolvemos un código 409 Conflict. 
-            return response()->json(['error'=>'Este producto posee relaciones y no puede ser eliminado.'], 409);
+            return response()->json(['error'=>'Este producto no puede ser eliminado porque posee pedidos asociados.'], 409);
         }
 
         // Eliminamos el producto si no tiene relaciones.

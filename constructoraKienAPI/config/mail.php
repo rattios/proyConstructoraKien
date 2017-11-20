@@ -28,7 +28,8 @@ return [
     |
     */
 
-    'host' => env('MAIL_HOST', 'smtp.gmail.com'),
+    //'host' => env('MAIL_HOST', 'smtp.gmail.com'),
+    'host' => env('MAIL_HOST', 'smtp.klein.lineadns.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +55,8 @@ return [
     |
     */
 
-    'from' => ['address' => 'rattios.tech@gmail.com', 'name' => 'Rattios'],
+    //'from' => ['address' => 'rattios.tech@gmail.com', 'name' => 'Rattios'],
+    'from' => ['address' => 'info@manappger.internow.com.mx', 'name' => 'manappger'],
 
     /*
     |--------------------------------------------------------------------------

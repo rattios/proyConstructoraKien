@@ -1,0 +1,328 @@
+<!-- <alert type="success" dismissible="true">
+  <strong>Well done!</strong> You successfully read this important alert message.
+</alert>
+ -->
+
+<div class="alertaC" *ngIf="alerta">
+  <alert  [type]="alerta_tipo" dismissible="true" close="cerrarAlerta()">
+    <strong>{{alerta_msg}}</strong> 
+  </alert>
+</div>
+
+<div class="alertaC" *ngIf="alerta_boton">
+  <alert [type]="alerta_tipo" >
+    <strong>{{alerta_msg}}</strong>
+    <button type="button" class="btn btn4 btn-secondary" (click)="ok_alerta()">ok</button> 
+  </alert>
+</div>
+
+<div *ngIf="!viendo && mostrar" class="animated fadeIn">
+  <div class="row">
+    <div class="col-md-12 mb-6">
+      <!-- Nav tabs -->
+      <tabset>
+        <tab>
+          <ng-template tabHeading><i class="icon-list"></i> Hoy &nbsp;<span class="badge badge-pill badge-danger">{{countPHoy}}</span></ng-template>
+
+          <div *ngIf="countPHoy == 0">
+            <div class="col-md-8" style="display:block; margin:auto; margin-top: 20px">
+              <div class="card text-white bg-info text-center">
+                <div class="card-body">
+                  <blockquote class="card-bodyquote">
+                    <p>NO HAY PEDIDOS PARA HOY</p>
+                    <!-- <footer>Someone famous in
+                      <cite title="Source Title">Source Title</cite>
+                    </footer> -->
+                  </blockquote>
+                </div>
+              </div>
+            </div><!--/.col-->
+          </div>
+          
+          <div *ngIf="countPHoy > 0">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="card-header">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group" style="text-align: right; margin-top: 7px;">
+                             <strong>Buscar: </strong>
+                             <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
+                             <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
+                            </div>
+                          </div>
+                        </div>
+                        
+                      </div>
+                      <div class="card-body ">
+                        <table class="table table-striped">
+                          <thead>
+                             <th></th>
+                             <!-- <th style="text-align: center;">ID</th> -->
+                             <th style="text-align: center;">Usuario</th>
+                             <th style="text-align: center;">Hora</th>
+                             <th style="text-align: center;">Acciones</th>
+                          </thead>
+                          <tbody>
+                             <tr *ngFor="let item of items" >
+                                <td></td>
+                                <!-- <td style="text-align: center; vertical-align:middle;">{{item.id}}</td> -->
+                                <td style="text-align: center; vertical-align:middle;">{{item.usuario.nombre}}</td>
+                                <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'hh:mm:ss'}} -->{{item.hora}}</td>
+                                <td style="text-align: center; vertical-align:middle;">
+                                  <button type="button" class="btn btn2 btn-primary" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
+                                </td>
+                             </tr>
+                          </tbody>
+                        </table>
+                          <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                            <div class="btn-group">
+                               <label style="margin-top:10px">Página {{currentIndex}}/{{pageNumber}} </label>
+                            </div>
+                            <div class="btn-group pull-right">
+                               <ul class="pagination" >
+                                  <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" >Atrás</a></li>
+                                     <li *ngFor="let page of pagesIndex"  [ngClass]="{'active': (currentIndex == page)}">
+                                        <a (click)="setPage(page)"  >{{page}} </a>
+                                     </li>
+                                  <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" >Siguiente</a></li>
+                               </ul>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab>
+          <ng-template tabHeading><i class="icon-list"></i> Historial &nbsp;<span class="badge badge-pill badge-danger">{{countPAnio}}</span></ng-template>
+
+          <div *ngIf="countPAnio == 0">
+            <div class="col-md-8" style="display:block; margin:auto; margin-top: 20px">
+              <div class="card text-white bg-info text-center">
+                <div class="card-body">
+                  <blockquote class="card-bodyquote">
+                    <p>NO HAY PEDIDOS EN EL HISTORIAL</p>
+                    <!-- <footer>Someone famous in
+                      <cite title="Source Title">Source Title</cite>
+                    </footer> -->
+                  </blockquote>
+                </div>
+              </div>
+            </div><!--/.col-->
+          </div>
+          
+          <div *ngIf="countPAnio > 0">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="card-header">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group" style="text-align: right; margin-top: 7px;">
+                             <strong>Buscar: </strong>
+                             <input  type="text"  id="inputName2" [(ngModel)]="inputName2" (ngModelChange)="FilterByName2()"/>
+                             <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
+                            </div>
+                          </div>
+                        </div>
+                        
+                      </div>
+                      <div class="card-body ">
+                        <table class="table table-striped">
+                          <thead>
+                             <th></th>
+                             <!-- <th style="text-align: center;">ID</th> -->
+                             <th style="text-align: center;">Usuario</th>
+                             <th style="text-align: center;">Fecha</th>
+                             <th style="text-align: center;">Hora</th>
+                             <th style="text-align: center;">Acciones</th>
+                          </thead>
+                          <tbody>
+                             <tr *ngFor="let item of items2" >
+                                <td></td>
+                                <!-- <td style="text-align: center; vertical-align:middle;">{{item.id}}</td> -->
+                                <td style="text-align: center; vertical-align:middle;">{{item.usuario.nombre}}</td>
+                                <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'dd/MM/yyyy'}} -->{{item.fecha}}</td>
+                                <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'hh:mm:ss'}} -->{{item.hora}}</td>
+                                <td style="text-align: center; vertical-align:middle;">
+                                  <button type="button" class="btn btn2 btn-primary" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
+                                </td>
+                             </tr>
+                          </tbody>
+                        </table>
+                          <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                            <div class="btn-group">
+                               <label style="margin-top:10px">Página {{currentIndex2}}/{{pageNumber2}} </label>
+                            </div>
+                            <div class="btn-group pull-right">
+                               <ul class="pagination" >
+                                  <li [ngClass]="{'disabled': (currentIndex2 == 1 || pageNumber2 == 0)}" ><a  (click)="prevPage2()" >Atrás</a></li>
+                                     <li *ngFor="let page of pagesIndex2"  [ngClass]="{'active': (currentIndex2 == page)}">
+                                        <a (click)="setPage2(page)"  >{{page}} </a>
+                                     </li>
+                                  <li [ngClass]="{'disabled': (currentIndex2 == pageNumber2 || pageNumber2 == 0)}" ><a   (click)="nextPage2()" >Siguiente</a></li>
+                               </ul>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        
+      </tabset>
+    </div><!--/.col-->
+  </div><!--/.row-->
+</div>
+
+<div *ngIf="viendo" class="animated fadeIn">
+  <div class="row">
+    <div class="col-md-12" style="display:block; margin:auto">
+      <div class="card">
+        <div class="card-header">
+          <strong>Detalles del Pedido:</strong>
+          <div class="pull-right" style="margin-right: 50px">
+            <strong>Fecha: {{selectedObj.created_at | date:'dd/MM/yyyy'}}</strong>
+            <strong>- Hora: {{selectedObj.created_at | date:'HH:mm:ss'}}</strong>
+          </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+            <div class="col-md-12">
+              <div class="card card-accent-primary">
+                <div class="card-header">
+                  <strong><i class="icon-user"></i> Usuario</strong>
+                </div>
+                <div class="card-body">
+                  <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="form-group row grupos" >
+                      <label class="col-md-3 form-control-label etiquetas">User</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.user}}</p>
+                      </div>
+
+                      <label class="col-md-3 form-control-label etiquetas">Nombre</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.nombre}}</p>
+                      </div>
+
+                      <label class="col-md-3 form-control-label etiquetas">Correo</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.correo}}</p>
+                      </div>
+
+                      <label class="col-md-3 form-control-label etiquetas">Teléfono</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.telefono}}</p>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div><!--/.col-->
+            
+            <div class="col-md-12">
+              <div class="card card-accent-success">
+                <div class="card-header">
+                  <strong><i class="icon-direction"></i>  Referencias</strong>
+                </div>
+                <div class="card-body">
+                  <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="form-group row grupos">
+                      <label class="col-md-3 form-control-label etiquetas">Dirección</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.direccion}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.descripcion" class="col-md-3 form-control-label etiquetas">Descripción</label>
+                      <div *ngIf="selectedObj.descripcion" class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.descripcion}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.referencia" class="col-md-3 form-control-label etiquetas">Referencia</label>
+                      <div *ngIf="selectedObj.referencia" class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.referencia}}</p>
+                      </div>
+                    </div>
+
+                    <div *ngIf="selectedObj.lat && selectedObj.lng">
+                      <!-- <strong>Aqui el mapa</strong> -->
+                      <agm-map style="height: 300px;" [zoom]="13" [latitude]="selectedObj.lat" [longitude]="selectedObj.lng">
+                            <agm-marker style="height: 300px;" [latitude]="selectedObj.lat" [longitude]="selectedObj.lng"></agm-marker>
+                        </agm-map>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+            </div><!--/.col-->
+            
+            <div class="col-md-12">
+              <div class="card card-accent-danger">
+                <div class="card-header">
+                  <strong><i class="icon-basket-loaded"></i>  Productos Solicitados</strong>
+                </div>
+                <div class="card-body">
+                  <!-- <div class="table-responsive"></div> -->
+                  <table class="table table-sm">
+                    <thead >
+                      <tr>
+                        <th class="text-center">Imagen</th>
+                        <th class="text-center">Producto</th>
+                        <th class="text-center">Unidad</th>
+                        <th class="text-center">Solicitados</th>
+                        <th class="text-center">Sub-total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of selectedObj.productos">
+                        <td class="text-center">
+                          <img src = "{{item.imagen}}" alt="" height="auto" width="60px"></td>
+                        <td class="text-center">
+                          {{item.nombre}}
+                        </td>
+                        <td class="text-center">
+                          {{item.unidad}}
+                        </td>
+                        <td class="text-center">
+                          {{item.pivot.cantidad}}
+                        </td>
+                        <td class="text-center">
+                          {{item.pivot.precio}}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer">
+                  <div class="pull-right" style="margin-right: 50px"><strong>Total: $ {{selectedObj.total}} MXN</strong></div>
+                </div>
+              </div>
+            </div><!--/.col-->
+          </div><!--/.row-->
+        </div>
+        <div class="card-footer">
+          <button  class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="my-container">
+    <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+</div>
+
+ 

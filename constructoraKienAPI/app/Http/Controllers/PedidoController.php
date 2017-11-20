@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use DB;
 
 class PedidoController extends Controller
 {
@@ -23,6 +24,44 @@ class PedidoController extends Controller
             return response()->json(['error'=>'No existen pedidos.'], 404);          
         }else{
             return response()->json(['status'=>'ok', 'pedidos'=>$pedidos], 200);
+        } 
+    }
+
+    public function pedidosHoyAnio()
+    {
+        //cargar todos los pedidos de hoy
+        $pedidosHoy = \App\Pedido::with('usuario')->with('productos')
+            ->where(DB::raw('DAY(created_at)'),DB::raw('DAY(now())'))
+            ->where(DB::raw('MONTH(created_at)'),DB::raw('MONTH(now())'))
+            ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
+            ->orderBy('id', 'desc')->get();
+
+        $mes_actual = date("m");
+        $anio_actual = date("Y");
+        $anio_anterior = $anio_actual - 1;
+
+        //Si estamos en enero cargo tambien los pedidos de diciembre
+        if($mes_actual == 1){
+            //cargar todos los pedidos del año en curso con los de diciembre
+            $pedidosAnio = \App\Pedido::with('usuario')->with('productos')
+                ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
+                ->orWhere(function ($query) {
+                    $query->where(DB::raw('MONTH(created_at)'),12)
+                        ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())-1'));
+                })
+                ->orderBy('id', 'desc')->get();
+        }else{
+            //cargar todos los pedidos del año en curso
+            $pedidosAnio = \App\Pedido::with('usuario')->with('productos')
+                ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
+                ->orderBy('id', 'desc')->get();
+        }
+
+        if(count($pedidosHoy) == 0){
+            return response()->json(['error'=>'No hay pedidos para hoy.', 'pedidosAnio'=>$pedidosAnio], 404);          
+        }else{
+            return response()->json(['status'=>'ok', 'pedidosHoy'=>$pedidosHoy,
+                'pedidosAnio'=>$pedidosAnio], 200);
         } 
     }
 
@@ -46,14 +85,10 @@ class PedidoController extends Controller
 
     public function store(Request $request)
     {
-        //NOTA:El parametro estado se debe pasar en el body del la peticion.
-        //lat y lng no son requeridos
-
-        $estado = $request->input('estado');
-
-        // Primero comprobaremos si estamos recibiendo todos los campos.
-        if (!$request->input('direccion') || !$request->input('descripcion') || !$request->input('referencia') ||
-            $estado == null || !$request->input('total') || !$request->input('productos') ||
+        // Primero comprobaremos si estamos recibiendo todos los campos obligatorios.
+        if (!$request->input('direccion') ||
+            !$request->input('total') ||
+            !$request->input('productos') ||
             !$request->input('usuario_id'))
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
@@ -77,7 +112,16 @@ class PedidoController extends Controller
             }   
         }    
 
-        if($nuevoPedido=\App\Pedido::create($request->all())){
+        if($nuevoPedido=\App\Pedido::create([
+            'direccion'=>$request->input('direccion'), 
+            'descripcion'=>$request->input('descripcion'), 
+            'referencia'=>$request->input('referencia'), 
+            'lat'=>$request->input('lat'),
+            'lng'=>$request->input('lng'),
+            'estado'=>0,
+            'usuario_id'=>$request->input('usuario_id'),
+            'total'=>$request->input('total')
+            ])){
 
             //Crear las relaciones en la tabla pivote
             for ($i=0; $i < count($productos) ; $i++) { 

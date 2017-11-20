@@ -35,11 +35,22 @@ Route::group(  ['middleware' =>'cors'], function(){
 
     Route::get('/productos','ProductoController@index');
     Route::get('/productos/categoria','ProductoController@productosCategoria');
-    
+    Route::get('/productos/habilitados/categoria','ProductoController@productosHabilitados');
+ 
+    Route::get('/categorias/productos','CategoriaController@categoriasProductos'); 
+
+    Route::get('/aplicacion','AplicacionController@index');
 
     Route::group(['middleware' => 'jwt-auth'], function(){
 
-                //----Pruebas UsuarioController
+        //----Pruebas DashboardController
+        Route::post('/aplicacion','AplicacionController@store');
+        Route::put('/aplicacion/{id}','AplicacionController@update');
+
+        //----Pruebas DashboardController
+        Route::get('/dashboard','DashboardController@index');
+
+        //----Pruebas UsuarioController
         Route::get('/usuarios','UsuarioController@index');
         Route::get('/usuarios/pedidos','UsuarioController@usuariosClientesPedidos');
         Route::post('/usuarios','UsuarioController@store'); //Crea admis para el panel
@@ -50,7 +61,8 @@ Route::group(  ['middleware' =>'cors'], function(){
 
         //----Pruebas CategoriaController
         Route::get('/categorias','CategoriaController@index');
-        Route::get('/categorias/productos','CategoriaController@categoriasProductos');
+        //Route::get('/categorias/productos','CategoriaController@categoriasProductos');
+        Route::get('/categorias/habilitadas','CategoriaController@categoriasHabilitadas');
         Route::post('/categorias','CategoriaController@store');
         Route::put('/categorias/{id}','CategoriaController@update');
         Route::delete('/categorias/{id}','CategoriaController@destroy');
@@ -68,6 +80,7 @@ Route::group(  ['middleware' =>'cors'], function(){
         
         //----Pruebas PedidoController
         Route::get('/pedidos','PedidoController@index');
+        Route::get('/pedidos/hoy/anio','PedidoController@pedidosHoyAnio');
         Route::post('/pedidos','PedidoController@store');
         Route::put('/pedidos/{id}','PedidoController@update');
         Route::delete('/pedidos/{id}','PedidoController@destroy');
