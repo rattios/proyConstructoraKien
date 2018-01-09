@@ -242,7 +242,7 @@
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
                     <!-- app.component.html -->
-                    <input type="file"
+                    <input type="file" name="myImage" accept="image/*"
                            ngFileSelect
                            [options]="options"
                            (onUpload)="handleUpload($event)"
@@ -266,6 +266,9 @@
                 </div>
               </div>
             </div>
+
+            <p style="color: #c71717"><b>Sugerencia:</b> La dimensión de la imagen no de debe ser mayor a 870x370 px.</p>
+            <br>
 
             <div *ngIf="subiendoImg">
               <i class="fa fa-spinner fa-spin"></i>Cargando...
@@ -325,7 +328,7 @@
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-file-image-o"></i></span>
                     <!-- app.component.html -->
-                    <input type="file"
+                    <input type="file" name="myImage" accept="image/*"
                            ngFileSelect
                            [options]="options"
                            (onUpload)="handleUpload($event)"
@@ -347,6 +350,10 @@
                       Response: {{ uploadFile | json }}
                     </div> -->
                 </div>
+
+                <br>
+                <p style="color: #c71717"><b>Sugerencia:</b> La dimensión de la imagen no de debe ser mayor a 870x370 px.</p>
+                <br>
 
                 <div *ngIf="subiendoImg">
                  <i class="fa fa-spinner fa-spin"></i>Cargando...

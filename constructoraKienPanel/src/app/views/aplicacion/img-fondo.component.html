@@ -17,8 +17,8 @@
       <div class="card">
         <div class="card-header">
           <i class="fa fa-picture-o"></i>
-          <strong> Imágen de fondo</strong>
-          <!-- <small>Form</small> -->
+          <strong> Imagen de fondo</strong>
+          <small>App</small>
         </div>
         <div class="card-body">
           <div class="row">
@@ -28,14 +28,15 @@
               </div>
 
               <div *ngIf="!subiendoImg" style="text-align: center; vertical-align:middle;">
-                <img src = "{{img_fondo}}" alt="" height="360px" width="250px">
+                <img src = "{{img_fondo}}" alt="" height="400px" width="250px">
               </div>
             </div>
           </div><!--/.row-->
         </div>
         <div class="card-footer">
           <!-- app.component.html -->
-          <input type="file"
+          <p style="color: #c71717"><b>Sugerencia:</b> La dimensión de la imagen no de debe ser mayor a 720x1280 px.</p>
+          <input type="file" name="myImage" accept="image/*"
                  ngFileSelect
                  [options]="options"
                  (onUpload)="handleUpload($event)"

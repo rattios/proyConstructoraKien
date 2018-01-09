@@ -15,6 +15,7 @@ class AplicacionMigration extends Migration
         Schema::create('aplicacion', function (Blueprint $table) {
             $table->increments('id');
             $table->text('img_fondo');
+            $table->text('img_registro');
             $table->timestamps();
         });
     }

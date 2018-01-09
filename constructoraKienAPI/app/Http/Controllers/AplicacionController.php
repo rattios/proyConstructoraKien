@@ -45,17 +45,17 @@ class AplicacionController extends Controller
     public function store(Request $request)
     {
         // Primero comprobaremos si estamos recibiendo todos los campos.
-        if ( !$request->input('img_fondo'))
+        if ( !$request->input('img_fondo') || !$request->input('img_registro'))
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
             return response()->json(['error'=>'Faltan datos necesarios para el proceso de alta.'],422);
         } 
 
         if($nuevoFondo=\App\Aplicacion::create($request->all())){
-           return response()->json(['status'=>'ok','message'=>'Fondo creado con exito.',
+           return response()->json(['status'=>'ok','message'=>'Aplicación configurada con exito.',
              'aplicacion'=>$nuevoFondo], 200);
         }else{
-            return response()->json(['error'=>'Error al crear el fondo.'], 500);
+            return response()->json(['error'=>'Error al configurar la aplicación.'], 500);
         }
     }
 
@@ -101,6 +101,7 @@ class AplicacionController extends Controller
 
         // Listado de campos recibidos teóricamente.
         $img_fondo=$request->input('img_fondo');
+        $img_registro=$request->input('img_registro');
 
         // Creamos una bandera para controlar si se ha modificado algún dato.
         $bandera = false;
@@ -112,14 +113,20 @@ class AplicacionController extends Controller
             $bandera=true;
         }
 
+        if ($img_registro != null && $img_registro!='')
+        {
+            $aplicacion->img_registro = $img_registro;
+            $bandera=true;
+        }
+
         if ($bandera)
         {
             // Almacenamos en la base de datos el registro.
             if ($aplicacion->save()) {
-                return response()->json(['status'=>'ok', 'message'=>'Fondo cambiado con éxito.',
+                return response()->json(['status'=>'ok', 'message'=>'Aplicación configurada con éxito.',
                     'aplicacion'=>$aplicacion], 200);
             }else{
-                return response()->json(['error'=>'Error al cambiar el fondo.'], 500);
+                return response()->json(['error'=>'Error al configurar la aplicación.'], 500);
             }
             
         }
@@ -127,7 +134,7 @@ class AplicacionController extends Controller
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 304 Not Modified – [No Modificada] Usado cuando el cacheo de encabezados HTTP está activo
             // Este código 304 no devuelve ningún body, así que si quisiéramos que se mostrara el mensaje usaríamos un código 200 en su lugar.
-            return response()->json(['error'=>'No se ha modificado el fondo.'],409);
+            return response()->json(['error'=>'Error al configurar la aplicación.'],409);
         }
     }
 

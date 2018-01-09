@@ -237,6 +237,7 @@ export class PedidosComponent {
       this.alerta = false
     }
 
+    //No esta en uso
     aEditar(obj): void {
       this.editando = true;
       this.objAEditar = Object.assign({},obj);
@@ -261,6 +262,7 @@ export class PedidosComponent {
     atras(): void {
       this.viendo = false;
       this.selectedObj = null;
+      this.objAEliminar = null;
       this.editando = false;
       this.agregando = false;
       this.objAEditar = null;
@@ -274,11 +276,11 @@ export class PedidosComponent {
       this.myFormAgregar.reset();
     }
 
-    aEliminar(obj): void {
-      this.objAEliminar = obj;
+    aEliminar(): void {
+      this.objAEliminar = this.selectedObj;
       //console.log(this.objAEliminar);
       this.eliminar_id = this.objAEliminar.id;
-      this.eliminar_nombre = this.objAEliminar.nombre;
+      this.eliminar_nombre = this.objAEliminar.usuario.nombre;
       //this.myModal.show();
     }
 
@@ -291,36 +293,60 @@ export class PedidosComponent {
         token: localStorage.getItem('constructora_token')
       }
 
-      this.http.delete(this.rutaService.getRutaApi()+'constructoraKienAPI/public/categorias/'+this.eliminar_id+'?token='+localStorage.getItem('constructora_token'))
-      //this.http.delete('http://constructorakien.internow.com.mx/constructoraKienAPI/public/categorias/'+this.eliminar_id+'?token='+localStorage.getItem('constructora_token'))
+      this.http.delete(this.rutaService.getRutaApi()+'constructoraKienAPI/public/pedidos/'+this.eliminar_id+'?token='+localStorage.getItem('constructora_token'))
          .toPromise()
          .then(
            data => { // Success
               console.log(data);
               this.data = data;
 
-              var aux = this.productList;
-              this.productList = [];
+              //----<
+              if (this.productList) {
+                var aux = this.productList;
+                this.productList = [];
 
-              for (var i = 0; i < aux.length; ++i) {
-                if (aux[i].id != this.eliminar_id) {
-                   this.productList.push(aux[i]);
+                for (var i = 0; i < aux.length; ++i) {
+                  if (aux[i].id != this.eliminar_id) {
+                     this.productList.push(aux[i]);
+                  }
+                  else{
+                    this.countPHoy = this.countPHoy - 1;
+                  }
+                }
+
+                this.filteredItems = this.productList;
+                this.init();
+              }
+              
+              //---->
+
+              //----<
+              var aux2 = this.productList2;
+              this.productList2 = [];
+
+              for (var i = 0; i < aux2.length; ++i) {
+                if (aux2[i].id != this.eliminar_id) {
+                   this.productList2.push(aux2[i]);
+                }
+                else{
+                  this.countPAnio = this.countPAnio - 1; 
                 }
               }
 
-              this.filteredItems = this.productList;
-              this.init();
+              this.filteredItems2 = this.productList2;
+              this.init2();
+              //---->
               
               //console.log(this.productList);
               //alert(this.data.message);
 
               this.loading = false;
+              this.atras();
 
               this.alerta_tipo = 'success';
               this.alerta_msg = this.data.message;
               this.alerta = true;
               setTimeout(()=>{this.alerta = false;},4000);
-
               
            },
            msg => { // Error
@@ -353,10 +379,12 @@ export class PedidosComponent {
          );
     }
 
+    //No esta en uso
     agregar(): void {
       this.agregando = true;  
     }
 
+    //No esta en uso
     crear(): void {
       console.log(this.myFormAgregar.value);
       
@@ -436,6 +464,7 @@ export class PedidosComponent {
          );
     }
 
+    //No esta en uso
     editar(): void {
      
       var imgAux: any;
@@ -512,6 +541,7 @@ export class PedidosComponent {
          );
     }
 
+    //No esta en uso
     cambiarEstado(obj): void {
 
       var v_estado: any;
@@ -745,6 +775,7 @@ export class PedidosComponent {
     }
     //Tabla2 Pedidos historial---->
 
+    //No esta en uso
     //Subir imagen----<
     uploadFile: any;
     hasBaseDropZoneOver: boolean = false;

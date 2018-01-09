@@ -24,7 +24,7 @@ class Aplicacion extends Model
      *
      * @var array
      */
-    protected $fillable = ['img_fondo'];
+    protected $fillable = ['img_fondo', 'img_registro'];
 
     /**
      * The attributes excluded from the model's JSON form.

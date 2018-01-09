@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
-import { AplicacionComponent } from './aplicacion.component';
+import { ImgFondoComponent } from './img-fondo.component';
+import { ImgRegistroComponent } from './img-registro.component';
 import { AplicacionRoutingModule } from './aplicacion-routing.module';
 import { FormsModule } from '@angular/forms';
 
@@ -47,6 +48,9 @@ import { AgmCoreModule } from '@agm/core';
         tertiaryColour: '#ffffff'
     })
   ],
-  declarations: [ AplicacionComponent ]
+  declarations: [ 
+    ImgFondoComponent,
+    ImgRegistroComponent
+     ]
 })
 export class AplicacionModule { }

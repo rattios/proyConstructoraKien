@@ -50,7 +50,8 @@ import { AgmCoreModule } from '@agm/core';
         backdropBorderRadius: '8px',
         primaryColour: '#ffffff', 
         secondaryColour: '#ffffff', 
-        tertiaryColour: '#ffffff'
+        tertiaryColour: '#ffffff',
+        fullScreenBackdrop: true
     })
   ],
   declarations: [ PedidosComponent ]

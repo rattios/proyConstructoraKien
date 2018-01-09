@@ -11,13 +11,13 @@ import { RutaBaseService } from '../../services/ruta-base.service';
 import { FormBuilder, FormArray, FormGroup, Validators  } from '@angular/forms';
 
 @Component({
-  selector: 'app-aplicacion',
-  templateUrl: 'aplicacion.component.html',
+  selector: 'app-img-registro',
+  templateUrl: 'img-registro.component.html',
   changeDetection: ChangeDetectionStrategy.Default,
   styleUrls : ['aplicacion.css']
 })
 
-export class AplicacionComponent {
+export class ImgRegistroComponent {
 
   private data:any;
 
@@ -31,9 +31,9 @@ export class AplicacionComponent {
 
   public subiendoImg = false;
 
-  public img_fondo_id: any;
-  public img_fondo: any;
-  public fondoAux: any;
+  public img_registro_id: any;
+  public img_registro: any;
+  public fondoRegistroAux: any;
 
     constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService) {
       if (localStorage.getItem('constructora_user_tipo') != '0') {
@@ -49,8 +49,8 @@ export class AplicacionComponent {
            data => { // Success
              console.log(data);
              this.data=data;
-             this.img_fondo = this.data.aplicacion.img_fondo+'?'+ new Date();
-             this.img_fondo_id = this.data.aplicacion.id;
+             this.img_registro = this.data.aplicacion.img_registro+'?'+ new Date();
+             this.img_registro_id = this.data.aplicacion.id;
 
              this.loading = false;
            },
@@ -98,16 +98,16 @@ export class AplicacionComponent {
 
       var datos= {
         token: localStorage.getItem('constructora_token'),
-        img_fondo: this.fondoAux
+        img_registro: this.fondoRegistroAux
       }
 
-      this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/aplicacion/'+this.img_fondo_id+'?token='+localStorage.getItem('constructora_token'), datos)
+      this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/aplicacion/'+this.img_registro_id+'?token='+localStorage.getItem('constructora_token'), datos)
          .toPromise()
          .then(
            data => { // Success
              console.log(data);
              this.data=data;
-             this.img_fondo = this.data.aplicacion.img_fondo+'?'+ new Date();
+             this.img_registro = this.data.aplicacion.img_registro+'?'+ new Date();
 
              this.alerta_tipo = 'success';
              this.alerta_msg = this.data.message;
@@ -132,7 +132,6 @@ export class AplicacionComponent {
                   this.alerta_boton = true;
                   this.mostrar = false;
               }
-              //sin usuarios
               else if(msg.status == 404 || msg.status == 409){ 
                   //alert(msg.error.error);
 
@@ -151,7 +150,7 @@ export class AplicacionComponent {
     uploadFile: any;
     hasBaseDropZoneOver: boolean = false;
     options: Object = {
-      url: this.rutaService.getRutaImages()+'uploadFondoApp.php'
+      url: this.rutaService.getRutaImages()+'uploadRegistroApp.php'
     };
     sizeLimit = 2000000;
    
@@ -163,7 +162,7 @@ export class AplicacionComponent {
       if (data && data.response) {
         data = JSON.parse(data.response);
         this.uploadFile = data;
-        this.fondoAux = this.rutaService.getRutaImages()+'fondoApp/'+this.uploadFile.generatedName;
+        this.fondoRegistroAux = this.rutaService.getRutaImages()+'registroApp/'+this.uploadFile.generatedName;
         //this.actualizarFondo();
         setTimeout(() => {
          this.actualizarFondo();
@@ -182,6 +181,7 @@ export class AplicacionComponent {
         alert('File is too large');
       }
     }
-    //Subir imagen---->
+    //Subir imagen fondo---->
+
   
 }

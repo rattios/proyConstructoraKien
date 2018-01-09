@@ -2,13 +2,17 @@ import { Component, ElementRef } from '@angular/core';
 
 import {NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
 
+import { ActivatedRoute } from "@angular/router";
+
+import {Router} from '@angular/router';
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './app-sidebar.component.html'
 })
 export class AppSidebar {
 
-  constructor(private el: ElementRef, private permissionsService: NgxPermissionsService) { 
+  constructor(private el: ElementRef, private permissionsService: NgxPermissionsService, private router: Router) { 
     if (localStorage.getItem('constructora_user_tipo') == '0') {
 
       const perm = ["SUPER"];
@@ -36,5 +40,18 @@ export class AppSidebar {
     }
     // remove the empty element(the host)
     parentElement.removeChild(nativeElement);
+  }
+
+  compararRutas(rutaElegida): void {
+    //console.log(rutaActual);
+
+    //console.log(this.router.url)
+
+    /*Si la ruta elegida es igual a la ruta actual, 
+    recargo la pagina*/
+    if(rutaElegida == this.router.url){
+      //console.log('recarga');
+      window.location.reload();
+    }
   }
 }

@@ -85,11 +85,11 @@
                   </div>
                   <div class="btn-group pull-right">
                      <ul class="pagination" >
-                        <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" href="#">Atrás</a></li>
+                        <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" >Atrás</a></li>
                            <li *ngFor="let page of pagesIndex"  [ngClass]="{'active': (currentIndex == page)}">
-                              <a (click)="setPage(page)" href="#" >{{page}} </a>
+                              <a (click)="setPage(page)"  >{{page}} </a>
                            </li>
-                        <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" href="#">Siguiente</a></li>
+                        <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" >Siguiente</a></li>
                      </ul>
                   </div>
                 </div>
