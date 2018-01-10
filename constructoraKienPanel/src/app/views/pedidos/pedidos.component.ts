@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Router} from '@angular/router';
 import 'rxjs/add/operator/toPromise';
@@ -9,6 +9,11 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 import { RutaBaseService } from '../../services/ruta-base.service';
 
 import { FormBuilder, FormArray, FormGroup, Validators  } from '@angular/forms';
+
+import * as jsPDF from 'jspdf';
+
+import * as html2canvas from 'html2canvas';
+//import * as html2canvas from 'html2canvas/dist/html2canvas.js';
 
 
 @Component({
@@ -77,6 +82,78 @@ export class PedidosComponent {
 
   public viendo = false;
   public productList2:any;
+
+  @ViewChild('content') public content:ElementRef;
+
+  public downloadPDF(){
+
+    let doc = new jsPDF();
+
+    let specialElementHandlers = {
+      '#editor': function(element, renderer){
+        return true;
+      }
+    };
+
+    let content = this.content.nativeElement;
+
+    doc.fromHTML(content.innerHTML, 15, 15, {
+      'width':190,
+      'elementHandlers': specialElementHandlers
+    });
+
+    doc.save('test.pdf');
+  }
+
+  public downloadPDF2(){
+
+   /*html2canvas(this.content.nativeElement, <Html2Canvas.Html2CanvasOptions>{
+      onrendered: function(canvas: HTMLCanvasElement) {
+        var pdf = new jsPDF('p','pt','a4');    
+        var img = canvas.toDataURL("image/png");
+        pdf.addImage(img, 'PNG', 10, 10, 580, 300);
+        pdf.save('web.pdf');
+      }
+    });*/
+
+    /*html2canvas(document.getElementById("content"), {
+            onrendered: function(canvas) {
+
+                var imgData = canvas.toDataURL('image/png');
+                console.log('Report Image URL: '+imgData);
+                var doc = new jsPDF('p', 'mm', [297, 210]); //210mm wide and 297mm high
+                
+                doc.addImage(imgData, 'PNG', 10, 10);
+                doc.save('sample.pdf');
+            }
+        });*/
+
+    /*html2canvas(document.querySelector("#content")).then(canvas => {
+        document.body.appendChild(canvas);
+
+        var imgData = canvas.toDataURL('image/png');
+        console.log('Report Image URL: '+imgData);
+        var doc = new jsPDF('p','pt','a4');
+        
+        doc.addImage(imgData, 'PNG', 10, 10, 580, 300);
+        doc.save('pedido.pdf');
+    });*/
+
+    html2canvas(document.querySelector("#content")).then(canvas => {
+        document.body.appendChild(canvas);
+
+        var imgData = canvas.toDataURL('image/png');
+        //console.log('Report Image URL: '+imgData);
+        //var doc = new jsPDF('p','pt','a4');
+        var doc = new jsPDF();
+        
+        //doc.addImage(imgData, 'PNG', 5, 5);
+        //doc.addImage(imgData, 'PNG', 30, 1);
+        //doc.addImage(imgData, 'JPEG', 1, 1);
+        doc.addImage(imgData, 'PNG', 10, 1);
+        doc.save('pedido.pdf');
+    });
+  }
 
     constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService, public fb: FormBuilder) {
       

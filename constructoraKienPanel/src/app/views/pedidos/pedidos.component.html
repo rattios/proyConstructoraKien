@@ -1,3 +1,11 @@
+<!-- <div id='content' #content>
+  <h1>the title</h1>
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dicta voluptates, dolores saepe iste repellendus odio quae, nesciunt quidem rerum delectus veniam et cum asperiores aliquam minima eveniet officia illo blanditiis!</p>
+</div>
+
+<button (click)="downloadPDF()">Export to PFD</button> -->
+
+
 <div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -336,6 +344,141 @@
         <div class="card-footer">
           <button  class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
           <button  class="btn btn-danger btn-sm btn-secondary pull-right" (click)="myModal.show(); aEliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+          <button  class="btn btn4 btn-sm btn-secondary pull-right" (click)="downloadPDF2()"><i class="fa fa-file-pdf-o"></i>&nbsp; Exportar a PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id='content' #content *ngIf="viendo" style="width: 720px; ">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Detalles del Pedido:</strong>
+          <div class="pull-right" style="margin-right: 50px">
+            <strong>Fecha: {{selectedObj.created_at | date:'dd/MM/yyyy'}}</strong>
+            <strong>- Hora: {{selectedObj.created_at | date:'HH:mm:ss'}}</strong>
+          </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+            <div class="col-md-12">
+              <div class="card card-accent-primary">
+                <div class="card-header">
+                  <strong><i class="icon-user"></i> Usuario</strong>
+                </div>
+                <div class="card-body">
+                  <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="form-group row grupos" >
+                      <label class="col-md-3 form-control-label etiquetas">User</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.user}}</p>
+                      </div>
+
+                      <label class="col-md-3 form-control-label etiquetas">Nombre</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.nombre}}</p>
+                      </div>
+
+                      <label class="col-md-3 form-control-label etiquetas">Correo</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.correo}}</p>
+                      </div>
+
+                      <label class="col-md-3 form-control-label etiquetas">Teléfono</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.usuario.telefono}}</p>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div><!--/.col-->
+            
+            <div class="col-md-12">
+              <div class="card card-accent-success">
+                <div class="card-header">
+                  <strong><i class="icon-direction"></i>  Referencias</strong>
+                </div>
+                <div class="card-body">
+                  <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="form-group row grupos">
+                      <label class="col-md-3 form-control-label etiquetas">Dirección</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.direccion}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.descripcion" class="col-md-3 form-control-label etiquetas">Descripción</label>
+                      <div *ngIf="selectedObj.descripcion" class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.descripcion}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.referencia" class="col-md-3 form-control-label etiquetas">Referencia</label>
+                      <div *ngIf="selectedObj.referencia" class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.referencia}}</p>
+                      </div>
+                    </div>
+
+                    <div *ngIf="selectedObj.lat && selectedObj.lng">
+                      <!-- <strong>Aqui el mapa</strong> -->
+                      <agm-map style="height: 300px;" [zoom]="13" [latitude]="selectedObj.lat" [longitude]="selectedObj.lng">
+                            <agm-marker style="height: 300px;" [latitude]="selectedObj.lat" [longitude]="selectedObj.lng"></agm-marker>
+                        </agm-map>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+            </div><!--/.col-->
+            
+            <div class="col-md-12">
+              <div class="card card-accent-danger">
+                <div class="card-header">
+                  <strong><i class="icon-basket-loaded"></i>  Productos Solicitados</strong>
+                </div>
+                <div class="card-body">
+                  <!-- <div class="table-responsive"></div> -->
+                  <table class="table table-sm">
+                    <thead >
+                      <tr>
+                        <th class="text-center">Imagen</th>
+                        <th class="text-center">Producto</th>
+                        <th class="text-center">Unidad</th>
+                        <th class="text-center">Solicitados</th>
+                        <th class="text-center">Sub-total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of selectedObj.productos">
+                        <td class="text-center">
+                          <img src = "{{item.imagen}}" alt="" height="auto" width="60px"></td>
+                        <td class="text-center">
+                          {{item.nombre}}
+                        </td>
+                        <td class="text-center">
+                          {{item.unidad}}
+                        </td>
+                        <td class="text-center">
+                          {{item.pivot.cantidad}}
+                        </td>
+                        <td class="text-center">
+                          {{item.pivot.precio}}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer">
+                  <div class="pull-right" style="margin-right: 50px"><strong>Total: $ {{selectedObj.total}} MXN</strong></div>
+                </div>
+              </div>
+            </div><!--/.col-->
+          </div><!--/.row-->
+        </div>
+        <div class="card-footer">
+          
         </div>
       </div>
     </div>
