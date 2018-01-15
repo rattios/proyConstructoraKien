@@ -155,6 +155,31 @@ export class PedidosComponent {
     });
   }
 
+  print(): void {
+    let printContents, popupWin;
+    printContents = document.getElementById('print-section').innerHTML;
+    popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+    popupWin.document.open();
+    popupWin.document.write(`
+      <html>
+        <head>
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+          
+          <style>
+            @media print {
+        @page { margin: 0; }
+        body { margin: 1.6cm; }
+      }
+          </style>
+
+        </head>
+
+      <body onload="window.print();window.close()"> ${printContents} </body>
+      </html>`
+    );
+    popupWin.document.close();
+  }
+
     constructor(private http: HttpClient,private router: Router, private rutaService: RutaBaseService, public fb: FormBuilder) {
       
       this.myFormAgregar = this.fb.group({

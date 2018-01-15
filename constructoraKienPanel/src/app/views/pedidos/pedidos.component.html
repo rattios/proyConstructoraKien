@@ -344,14 +344,14 @@
         <div class="card-footer">
           <button  class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
           <button  class="btn btn-danger btn-sm btn-secondary pull-right" (click)="myModal.show(); aEliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
-          <button  class="btn btn4 btn-sm btn-secondary pull-right" (click)="downloadPDF2()"><i class="fa fa-file-pdf-o"></i>&nbsp; Exportar a PDF</button>
+          <button  class="btn btn4 btn-sm btn-secondary pull-right" (click)="print()"><i class="fa fa-file-pdf-o"></i>&nbsp; Exportar a PDF</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div id='content' #content *ngIf="viendo" style="width: 720px; ">
+<div id='print-section' [hidden]="true" #content *ngIf="viendo" style="width: 720px; ">
   <div class="row">
     <div class="col-md-12">
       <div class="card">
