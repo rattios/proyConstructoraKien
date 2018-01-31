@@ -25,7 +25,7 @@ class Pedido extends Model
      * @var array
      */
     protected $fillable = ['direccion', 'descripcion', 'referencia', 'lat',
-     'lng', 'total', 'estado', 'usuario_id'];
+     'lng', 'total', 'estado', 'usuario_id', 'vendedor_id'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -46,5 +46,12 @@ class Pedido extends Model
         // 1 pedido contiene muchos productos
         return $this->belongsToMany('\App\Producto','pedido_productos','pedido_id','producto_id')
             ->withPivot('cantidad','precio')->withTimestamps(); 
+    }
+
+    // Relación de pedidos con vendedor:
+    public function vendedor()
+    {
+        // 1 pedido pertenece a un vendedor
+        return $this->belongsTo('App\Vendedor', 'vendedor_id');
     }
 }

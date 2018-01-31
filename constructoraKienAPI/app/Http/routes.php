@@ -41,6 +41,9 @@ Route::group(  ['middleware' =>'cors'], function(){
 
     Route::get('/aplicacion','AplicacionController@index');
 
+
+        
+
     Route::group(['middleware' => 'jwt-auth'], function(){
 
         //----Pruebas DashboardController
@@ -85,6 +88,14 @@ Route::group(  ['middleware' =>'cors'], function(){
         Route::put('/pedidos/{id}','PedidoController@update');
         Route::delete('/pedidos/{id}','PedidoController@destroy');
         Route::get('/pedidos/{id}','PedidoController@show');
+
+        //----Pruebas VendedorController
+        Route::get('/vendedores','VendedorController@index');
+        Route::get('/vendedores/disponibles','VendedorController@vendedoresDisponibles');
+        Route::post('/vendedores','VendedorController@store');
+        Route::put('/vendedores/{id}','VendedorController@update');
+        Route::delete('/vendedores/{id}','VendedorController@destroy');
+        Route::get('/vendedores/{id}','VendedorController@show');
 
     });
 });

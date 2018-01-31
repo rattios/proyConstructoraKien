@@ -344,7 +344,7 @@
         <div class="card-footer">
           <button  class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
           <button  class="btn btn-danger btn-sm btn-secondary pull-right" (click)="myModal.show(); aEliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
-          <button  class="btn btn4 btn-sm btn-secondary pull-right" (click)="print()"><i class="fa fa-file-pdf-o"></i>&nbsp; Exportar a PDF</button>
+          <button  class="btn btn4 btn-sm btn-secondary pull-right" style="margin-right:15px;" (click)="print()"><i class="fa fa-file-pdf-o"></i>&nbsp; Exportar a PDF</button>
         </div>
       </div>
     </div>
@@ -353,7 +353,7 @@
 
 <div id='print-section' [hidden]="true" #content *ngIf="viendo" style="width: 720px; ">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12">
       <div class="card">
         <div class="card-header">
           <strong>Detalles del Pedido:</strong>
@@ -364,7 +364,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-            <div class="col-md-12">
+            <div class="col-sm-12">
               <div class="card card-accent-primary">
                 <div class="card-header">
                   <strong><i class="icon-user"></i> Usuario</strong>
@@ -372,23 +372,22 @@
                 <div class="card-body">
                   <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                     <div class="form-group row grupos" >
-                      <label class="col-md-3 form-control-label etiquetas">User</label>
-                      <div class="col-md-9">
+                      <label class="col-sm-3 form-control-label etiquetas">User</label>
+                      <div class="col-sm-9">
                         <p class="form-control-static">{{selectedObj.usuario.user}}</p>
                       </div>
-
-                      <label class="col-md-3 form-control-label etiquetas">Nombre</label>
-                      <div class="col-md-9">
+                      <label class="col-sm-3 form-control-label etiquetas">Nombre</label>
+                      <div class="col-sm-9">
                         <p class="form-control-static">{{selectedObj.usuario.nombre}}</p>
                       </div>
 
-                      <label class="col-md-3 form-control-label etiquetas">Correo</label>
-                      <div class="col-md-9">
+                      <label class="col-sm-3 form-control-label etiquetas">Correo</label>
+                      <div class="col-sm-9">
                         <p class="form-control-static">{{selectedObj.usuario.correo}}</p>
                       </div>
 
-                      <label class="col-md-3 form-control-label etiquetas">Teléfono</label>
-                      <div class="col-md-9">
+                      <label class="col-sm-3 form-control-label etiquetas">Teléfono</label>
+                      <div class="col-sm-9">
                         <p class="form-control-static">{{selectedObj.usuario.telefono}}</p>
                       </div>
                     </div>
@@ -397,7 +396,7 @@
               </div>
             </div><!--/.col-->
             
-            <div class="col-md-12">
+            <div class="col-sm-12">
               <div class="card card-accent-success">
                 <div class="card-header">
                   <strong><i class="icon-direction"></i>  Referencias</strong>
@@ -405,18 +404,18 @@
                 <div class="card-body">
                   <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                     <div class="form-group row grupos">
-                      <label class="col-md-3 form-control-label etiquetas">Dirección</label>
-                      <div class="col-md-9">
+                      <label class="col-sm-3 form-control-label etiquetas">Dirección</label>
+                      <div class="col-sm-9">
                         <p class="form-control-static">{{selectedObj.direccion}}</p>
                       </div>
 
-                      <label *ngIf="selectedObj.descripcion" class="col-md-3 form-control-label etiquetas">Descripción</label>
-                      <div *ngIf="selectedObj.descripcion" class="col-md-9">
+                      <label *ngIf="selectedObj.descripcion" class="col-sm-3 form-control-label etiquetas">Descripción</label>
+                      <div *ngIf="selectedObj.descripcion" class="col-sm-9">
                         <p class="form-control-static">{{selectedObj.descripcion}}</p>
                       </div>
 
-                      <label *ngIf="selectedObj.referencia" class="col-md-3 form-control-label etiquetas">Referencia</label>
-                      <div *ngIf="selectedObj.referencia" class="col-md-9">
+                      <label *ngIf="selectedObj.referencia" class="col-sm-3 form-control-label etiquetas">Referencia</label>
+                      <div *ngIf="selectedObj.referencia" class="col-sm-9">
                         <p class="form-control-static">{{selectedObj.referencia}}</p>
                       </div>
                     </div>
@@ -433,7 +432,7 @@
               </div>
             </div><!--/.col-->
             
-            <div class="col-md-12">
+            <div class="col-sm-12">
               <div class="card card-accent-danger">
                 <div class="card-header">
                   <strong><i class="icon-basket-loaded"></i>  Productos Solicitados</strong>
@@ -471,7 +470,7 @@
                   </table>
                 </div>
                 <div class="card-footer">
-                  <div class="pull-right" style="margin-right: 50px"><strong>Total: $ {{selectedObj.total}} MXN</strong></div>
+                  <div class="pull-right" style="margin-right: 50px; float:right"><strong>Total: $ {{selectedObj.total}} MXN</strong></div>
                 </div>
               </div>
             </div><!--/.col-->

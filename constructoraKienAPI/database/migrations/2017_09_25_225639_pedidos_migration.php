@@ -24,6 +24,9 @@ class PedidosMigration extends Migration
 
             $table->integer('usuario_id')->unsigned();
             $table->foreign('usuario_id')->references('id')->on('usuarios');
+
+            $table->integer('vendedor_id')->unsigned()->nullable();
+            $table->foreign('vendedor_id')->references('id')->on('vendedores');
             
             $table->timestamps();
         });

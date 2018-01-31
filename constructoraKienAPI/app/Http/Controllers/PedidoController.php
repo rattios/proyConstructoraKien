@@ -86,7 +86,7 @@ class PedidoController extends Controller
     public function store(Request $request)
     {
         // Primero comprobaremos si estamos recibiendo todos los campos obligatorios.
-        if (!$request->input('direccion') ||
+        if (
             !$request->input('total') ||
             !$request->input('productos') ||
             !$request->input('usuario_id'))
@@ -94,6 +94,7 @@ class PedidoController extends Controller
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
             return response()->json(['error'=>'Faltan datos necesarios para el proceso de alta.'],422);
         }
+
 
         //validaciones
         $aux1 = \App\User::find($request->input('usuario_id'));
@@ -112,8 +113,14 @@ class PedidoController extends Controller
             }   
         }    
 
+        if(is_array($request->input('direccion'))){
+            $dir = implode($request->input('direccion'));
+        }else{
+            $dir = $request->input('direccion');
+        }
+
         if($nuevoPedido=\App\Pedido::create([
-            'direccion'=>$request->input('direccion'), 
+            'direccion'=>$dir, 
             'descripcion'=>$request->input('descripcion'), 
             'referencia'=>$request->input('referencia'), 
             'lat'=>$request->input('lat'),
@@ -214,6 +221,7 @@ class PedidoController extends Controller
         $total=$request->input('total');
         $estado=$request->input('estado');
         //$productos=$request->input('productos');
+        $vendedor_id=$request->input('vendedor_id');
 
         // Creamos una bandera para controlar si se ha modificado algún dato.
         $bandera = false;
@@ -258,6 +266,21 @@ class PedidoController extends Controller
         if ($estado != null && $estado!='')
         {
             $pedido->estado = $estado;
+            $bandera=true;
+        }
+
+        if ($vendedor_id != null && $vendedor_id!='')
+        {
+            // Comprobamos si el vendedor que nos están pasando existe o no.
+            $vendedor=\App\Vendedor::find($vendedor_id);
+
+            if (count($vendedor)==0)
+            {
+                // Devolvemos error codigo http 404
+                return response()->json(['error'=>'No existe el vendedor que se quiere asociar al pedido.'], 404);
+            }
+
+            $pedido->vendedor_id = $vendedor_id;
             $bandera=true;
         }
 
