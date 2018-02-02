@@ -35,6 +35,9 @@
           </li>
         </ul>
       </li>
+      <li *ngxPermissionsOnly="['SUPER']" class="nav-item">
+        <a class="nav-link" routerLinkActive="active" [routerLink]="['/vendedores']" (click)="compararRutas('/vendedores')"><i class="icon-user"></i> Vendedores </a> 
+      </li>
     </ul>
   </nav>
   <app-sidebar-footer></app-sidebar-footer>

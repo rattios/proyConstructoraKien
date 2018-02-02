@@ -46,6 +46,10 @@ export const routes: Routes = [
         path: 'aplicacion',
         loadChildren: './views/aplicacion/aplicacion.module#AplicacionModule'
       },
+      {
+        path: 'vendedores',
+        loadChildren: './views/vendedores/vendedores.module#VendedoresModule'
+      },
     ]
   },
   {

@@ -1,0 +1,353 @@
+<!--Modal automatica:
+ <button type="button" class="btn btn-primary" (click)="showModal()">Render auto-shown modal</button>-->
+<div *ngIf="isModalShown" [config]="{ show: true, ignoreBackdropClick: true, keyboard: false }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Productos de la categoría {{habCategoria.nombre}}</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal(); apagarSwiche()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-header">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group" style="text-align: right; margin-top: 7px;">
+                         <strong>Buscar: </strong>
+                         <input  type="text"  id="inputName2" [(ngModel)]="inputName2" (ngModelChange)="FilterByName2()"/>
+                         <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
+                        </div>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  <div class="card-body ">
+                    <table class="table table-striped">
+                      <thead>
+                         <th></th>
+                         <!-- <th style="text-align: center;">ID</th> -->
+                         <th style="text-align: center;">Imagen</th>
+                         <th style="text-align: center;">Nombre</th>
+                         <th style="text-align: center;">Costo</th>
+                         <!-- <th style="text-align: center;">Cantidad</th> -->
+                         <th style="text-align: center;">Unidad</th>
+                         <th style="text-align: center;">Estado</th>
+                         
+                      </thead>
+                      <tbody>
+                         <tr *ngFor="let item of items2" >
+                            <td></td>
+                            <!-- <td style="text-align: center; vertical-align:middle;">{{item.id}}</td> -->
+                            <td style="text-align: center; vertical-align:middle;"><img src = "{{item.imagen}}" alt="" height="auto" width="60px"></td> 
+                            <td style="text-align: center; vertical-align:middle;">{{item.nombre}}</td>
+                            <td style="text-align: center; vertical-align:middle;">{{item.costo}}</td>
+                            <!-- <td style="text-align: center; vertical-align:middle;">{{item.cantidad}}</td> -->
+                            <td style="text-align: center; vertical-align:middle;">{{item.unidad}}</td>
+                            <td style="text-align: center; vertical-align:middle;">
+                              <label class="switch switch-text switch-pill switch-primary">
+                                <input  [checked]="item.estado === 'ON'" type="checkbox" class="switch-input" (change)="cambioSwicheProd(item)" >
+                                <span class="switch-label" data-on="On" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                              </label>
+                            </td>
+                            
+                         </tr>
+                      </tbody>
+                    </table>
+                      <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                        <div class="btn-group">
+                           <label style="margin-top:10px">Página {{currentIndex2}}/{{pageNumber2}} </label>
+                        </div>
+                        <div class="btn-group pull-right">
+                           <ul class="pagination" >
+                              <li [ngClass]="{'disabled': (currentIndex2 == 1 || pageNumber2 == 0)}" ><a  (click)="prevPage2()" >Atrás</a></li>
+                                 <li *ngFor="let page of pagesIndex2"  [ngClass]="{'active': (currentIndex2 == page)}">
+                                    <a (click)="setPage(page)"  >{{page}} </a>
+                                 </li>
+                              <li [ngClass]="{'disabled': (currentIndex2 == pageNumber2 || pageNumber2 == 0)}" ><a   (click)="nextPage2()" >Siguiente</a></li>
+                           </ul>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn4 btn-secondary" (click)="hideModal(); apagarSwiche()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="hideModal(); habilitarCat()"><i class="fa fa-check"></i>&nbsp; Habilitar</button>
+      </div>
+    </div>
+  </div>
+</div> 
+
+<!-- <alert type="success" dismissible="true">
+  <strong>Well done!</strong> You successfully read this important alert message.
+</alert>
+ -->
+
+<div class="alertaC" *ngIf="alerta">
+  <alert  [type]="alerta_tipo" dismissible="true" close="cerrarAlerta()">
+    <strong>{{alerta_msg}}</strong> 
+  </alert>
+</div>
+
+<div class="alertaC" *ngIf="alerta_boton">
+  <alert [type]="alerta_tipo" >
+    <strong>{{alerta_msg}}</strong>
+    <button type="button" class="btn btn4 btn-secondary" (click)="ok_alerta()">ok</button> 
+  </alert>
+</div>
+
+<div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Eliminar vendedor </h4>
+        <button type="button" class="close" (click)="myModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Realmente desea eliminar el vendedor {{eliminar_nombre}}?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn4 btn-secondary" (click)="myModal.hide()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="myModal.hide(); eliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="animated fadeIn" *ngIf="!editando && !agregando && mostrar">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-md-6">
+                  <button *ngxPermissionsOnly="['SUPER']" type="button" class="btn btn3 btn-primary" (click)="agregar()"><i class="fa fa-plus-square-o"></i>&nbsp; Agregar Vendedor</button>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group" style="text-align: right; margin-top: 7px;">
+                   <strong>Buscar: </strong>
+                   <input  type="text"  id="inputName" [(ngModel)]="inputName" (ngModelChange)="FilterByName()"/>
+                   <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+            <div class="card-body ">
+              <table class="table table-striped">
+                <thead>
+                   <!-- <th></th> -->
+                   <!-- <th style="text-align: center;">ID</th> -->
+                   <th style="text-align: center;">Nombre</th>
+                   <th style="text-align: center;">Apellido</th>
+                   <th style="text-align: center;">Teléfono</th>
+                   <th style="text-align: center;">Correo</th>
+                   <th style="text-align: center;">Estado</th>
+                   <th *ngxPermissionsOnly="['SUPER']" style="text-align: center;">Acciones</th>
+                </thead>
+                <tbody>
+                   <tr *ngFor="let item of items" >
+                      <!-- <td></td> -->
+                      <!-- <td style="text-align: center; vertical-align:middle;">{{item.id}}</td> -->
+                      <td style="text-align: center; vertical-align:middle;">{{item.nombre}}</td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.apellido}}</td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.telefono}}</td>
+                      <td style="text-align: center; vertical-align:middle;">{{item.correo}}</td>
+                      <td style="text-align: center; vertical-align:middle;">
+                        <div *ngIf="mostrarSwiches">
+                        <label class="switch switch-text switch-pill switch-primary">
+                          <input [disabled]="admin" [checked]="item.estado === 'ON'" type="checkbox" class="switch-input" (change)="cambioSwicheCat(item)" >
+                          <span class="switch-label" data-on="On" data-off="Off"></span>
+                          <span class="switch-handle"></span>
+                        </label>
+                        </div>
+                      </td> 
+                      <td *ngxPermissionsOnly="['SUPER']" style="text-align: center; vertical-align:middle;">
+                        <button type="button" class="btn btn2 btn-primary" (click)="aEditar(item)"><i class="fa fa-edit"></i>&nbsp; Editar</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" (click)="myModal.show(); aEliminar(item)"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
+                      </td>
+                   </tr>
+                </tbody>
+              </table>
+                <div class="btn-toolbar" role="toolbar" style="margin: 0;">
+                  <div class="btn-group">
+                     <label style="margin-top:10px">Página {{currentIndex}}/{{pageNumber}} </label>
+                  </div>
+                  <div class="btn-group pull-right">
+                     <ul class="pagination" >
+                        <li [ngClass]="{'disabled': (currentIndex == 1 || pageNumber == 0)}" ><a  (click)="prevPage()" >Atrás</a></li>
+                           <li *ngFor="let page of pagesIndex"  [ngClass]="{'active': (currentIndex == page)}">
+                              <a (click)="setPage(page)"  >{{page}} </a>
+                           </li>
+                        <li [ngClass]="{'disabled': (currentIndex == pageNumber || pageNumber == 0)}" ><a   (click)="nextPage()" >Siguiente</a></li>
+                     </ul>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="animated fadeIn" *ngIf="editando">
+  <div class="row">
+    <div class="col-md-10" style="display:block; margin:auto">
+      <div class="card">
+        <div class="card-header">
+          <strong>Editar vendedor: </strong> {{myFormEditar.value.nombre}} {{myFormEditar.value.apellido}}
+        </div>
+        <div class="card-body">
+          <form [formGroup]="myFormEditar" novalidate class="form-horizontal">
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-cubes"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Nombre" formControlName="nombre">
+                </div>
+                <div *ngIf="myFormEditar.get('nombre').errors && myFormEditar.get('nombre').dirty">
+                <p class="danger" *ngIf="myFormEditar.get('nombre').hasError('required')">Nombre es requerido</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Apellido" formControlName="apellido">
+                </div>
+                <div *ngIf="myFormEditar.get('apellido').errors && myFormEditar.get('apellido').dirty">
+                <p color="danger" *ngIf="myFormEditar.get('apellido').hasError('required')">Apellido es requerido</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-phone-square"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Teléfono" formControlName="telefono">
+                </div>
+                <div *ngIf="myFormEditar.get('telefono').errors && myFormEditar.get('telefono').dirty">
+                <p color="danger" *ngIf="myFormEditar.get('telefono').hasError('required')">Teléfono es requerido</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-envelope-o"></i></span>
+                  <input type="email" id="input1-group1" name="input1-group1" class="form-control" placeholder="Correo" formControlName="correo">
+                </div>
+                <div *ngIf="myFormEditar.get('correo').errors && myFormEditar.get('correo').dirty">
+                <p color="danger" *ngIf="myFormEditar.get('correo').hasError('required')">Correo es requerido</p>
+                </div>
+              </div>
+            </div>
+            
+          </form>
+        </div>
+        <div class="card-footer">
+          <button  class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          <button type="submit" class="btn btn-sm btn-success" (click)="editar()" [disabled]="myFormEditar.invalid"><i class="fa fa-dot-circle-o"></i> Guardar</button>
+          <!-- <button type="reset" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i> Reset</button> -->
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="animated fadeIn" *ngIf="agregando">
+  <div class="row">
+    <div class="col-md-10" style="display:block; margin:auto">
+      <div class="card">
+        <div class="card-header">
+          <strong>Agregar vendedor:</strong>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="myFormAgregar" novalidate class="form-horizontal">
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Nombre" formControlName="nombre">
+                </div>
+                <div *ngIf="myFormAgregar.get('nombre').errors && myFormAgregar.get('nombre').dirty">
+                <p color="danger" *ngIf="myFormAgregar.get('nombre').hasError('required')">Nombre es requerido</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Apellido" formControlName="apellido">
+                </div>
+                <div *ngIf="myFormAgregar.get('apellido').errors && myFormAgregar.get('apellido').dirty">
+                <p color="danger" *ngIf="myFormAgregar.get('apellido').hasError('required')">Apellido es requerido</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-phone-square"></i></span>
+                  <input type="text" id="input1-group1" name="input1-group1" class="form-control" placeholder="Teléfono" formControlName="telefono">
+                </div>
+                <div *ngIf="myFormAgregar.get('telefono').errors && myFormAgregar.get('telefono').dirty">
+                <p color="danger" *ngIf="myFormAgregar.get('telefono').hasError('required')">Teléfono es requerido</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-envelope-o"></i></span>
+                  <input type="email" id="input1-group1" name="input1-group1" class="form-control" placeholder="Correo" formControlName="correo">
+                </div>
+                <div *ngIf="myFormAgregar.get('correo').errors && myFormAgregar.get('correo').dirty">
+                <p color="danger" *ngIf="myFormAgregar.get('correo').hasError('required')">Correo es requerido</p>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
+          <button type="submit" class="btn btn-sm btn-success" (click)="crear()" [disabled]="myFormAgregar.invalid"><i class="fa fa-dot-circle-o"></i> Crear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="my-container">
+    <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+</div>
+
+ 

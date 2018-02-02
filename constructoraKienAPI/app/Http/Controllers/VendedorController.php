@@ -69,7 +69,7 @@ class VendedorController extends Controller
         $vendedor->estado = 'ON'; //Disponible por defecto
 
         if($vendedor->save()){
-           return response()->json(['vendedor'=>$vendedor], 200);
+           return response()->json(['message'=>'Vendedor creado con éxito.', 'vendedor'=>$vendedor], 200);
         }else{
             return response()->json(['error'=>'Error al crear el vendedor.'], 500);
         }
@@ -176,7 +176,7 @@ class VendedorController extends Controller
         {
             // Almacenamos en la base de datos el registro.
             if ($vendedor->save()) {
-                return response()->json(['vendedor'=>$vendedor], 200);
+                return response()->json(['message'=>'Vendedor editado con éxito.', 'vendedor'=>$vendedor], 200);
             }else{
                 return response()->json(['error'=>'Error al actualizar el vendedor.'], 500);
             }

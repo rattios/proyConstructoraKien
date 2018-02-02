@@ -41,6 +41,8 @@ Route::group(  ['middleware' =>'cors'], function(){
 
     Route::get('/aplicacion','AplicacionController@index');
 
+    Route::post('/usuarios','UsuarioController@store'); //Crea admis para el panel
+
 
         
 
@@ -56,7 +58,7 @@ Route::group(  ['middleware' =>'cors'], function(){
         //----Pruebas UsuarioController
         Route::get('/usuarios','UsuarioController@index');
         Route::get('/usuarios/pedidos','UsuarioController@usuariosClientesPedidos');
-        Route::post('/usuarios','UsuarioController@store'); //Crea admis para el panel
+        //Route::post('/usuarios','UsuarioController@store'); //Crea admis para el panel
         Route::put('/usuarios/{id}','UsuarioController@update');
         Route::delete('/usuarios/{id}','UsuarioController@destroy');
         Route::get('/usuarios/{id}','UsuarioController@show');
