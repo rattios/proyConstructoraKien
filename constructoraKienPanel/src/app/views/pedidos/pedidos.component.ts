@@ -25,11 +25,9 @@ import * as html2canvas from 'html2canvas';
 
 export class PedidosComponent {
 
-  
-
-  /*Modal automatica
+  //Modal automatica
   @ViewChild('autoShownModal') public autoShownModal:ModalDirective;
-  public isModalShown:boolean = true;
+  public isModalShown:boolean = false;
  
   public showModal():void {
     this.isModalShown = true;
@@ -41,7 +39,7 @@ export class PedidosComponent {
  
   public onHidden():void {
     this.isModalShown = false;
-  }*/
+  }
 
   private data:any;
   public productList:any;
@@ -82,6 +80,10 @@ export class PedidosComponent {
 
   public viendo = false;
   public productList2:any;
+
+  public vendedores:any; //vendedores disponibles
+  public vendedor_sel:any; //vendedor seleccionado para asignarlo a un pedido
+  public pedido_id:any; //pedido al cual se le va a asignar un vendedor
 
   @ViewChild('content') public content:ElementRef;
 
@@ -745,12 +747,18 @@ export class PedidosComponent {
       this.filteredItems = [];
       if(this.inputName != ""){
             for (var i = 0; i < this.productList.length; ++i) {
+              if (!this.productList[i].vendedor) {
+                this.productList[i].vendedor={nombre : ' '};
+              }
+
               if (this.productList[i].usuario.nombre.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
                  this.filteredItems.push(this.productList[i]);
               }else if (this.productList[i].fecha.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
                  this.filteredItems.push(this.productList[i]);
               }
               else if (this.productList[i].hora.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
+                 this.filteredItems.push(this.productList[i]);
+              }else if (this.productList[i].vendedor.nombre.toUpperCase().indexOf(this.inputName.toUpperCase())>=0) {
                  this.filteredItems.push(this.productList[i]);
               }
             }
@@ -835,12 +843,18 @@ export class PedidosComponent {
       this.filteredItems2 = [];
       if(this.inputName2 != ""){
             for (var i = 0; i < this.productList2.length; ++i) {
+              if (!this.productList2[i].vendedor) {
+                this.productList2[i].vendedor={nombre : ' '};
+              }
+
               if (this.productList2[i].usuario.nombre.toUpperCase().indexOf(this.inputName2.toUpperCase())>=0) {
                  this.filteredItems2.push(this.productList2[i]);
               }else if (this.productList2[i].fecha.toUpperCase().indexOf(this.inputName2.toUpperCase())>=0) {
                  this.filteredItems2.push(this.productList2[i]);
               }
               else if (this.productList2[i].hora.toUpperCase().indexOf(this.inputName2.toUpperCase())>=0) {
+                 this.filteredItems2.push(this.productList2[i]);
+              }else if (this.productList2[i].vendedor.nombre.toUpperCase().indexOf(this.inputName2.toUpperCase())>=0) {
                  this.filteredItems2.push(this.productList2[i]);
               }
             }
@@ -930,5 +944,147 @@ export class PedidosComponent {
       }
     }
     //Subir imagen---->
+
+    cargarVendedores(pedido_id): void {
+
+      this.pedido_id = pedido_id;
+      
+      this.loading = true;
+
+      var datos= {
+        token: localStorage.getItem('constructora_token')
+      }
+
+      this.http.get(this.rutaService.getRutaApi()+'constructoraKienAPI/public/vendedores/disponibles?token='+localStorage.getItem('constructora_token'))
+         .toPromise()
+         .then(
+           data => { // Success
+              console.log(data);
+              this.data = data;
+
+              this.vendedores = this.data.vendedores;
+
+              this.loading = false;
+
+              this.showModal();
+   
+           },
+           msg => { // Error
+             console.log(msg);
+             console.log(msg.error.error);
+
+             this.loading = false;
+
+             //token invalido/ausente o token expiro
+             if(msg.status == 400 || msg.status == 401){ 
+                  //alert(msg.error.error);
+                  //ir a login
+
+                  this.alerta_tipo = 'warning';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta_boton = true;
+                  this.mostrar = false;
+              }
+              //no encontrada o confilto
+              else if(msg.status == 404 ){ 
+                  //alert(msg.error.error);
+
+                  this.alerta_tipo = 'danger';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta = true;
+                  setTimeout(()=>{this.alerta = false;},4000);
+              }
+
+           }
+         );
+    }
+
+    setVendedor(vendedor_sel): void{
+      this.vendedor_sel = vendedor_sel;
+    }
+
+    clearVendedores(): void{
+      this.vendedor_sel = null;
+      this.vendedores = null;
+      this.pedido_id = null;
+    }
+
+    asignarVendedor(): void {
+     
+      this.loading = true;
+
+      var datos= {
+        token: localStorage.getItem('constructora_token'),
+        vendedor_id: this.vendedor_sel.id
+      }
+
+      this.http.put(this.rutaService.getRutaApi()+'constructoraKienAPI/public/pedidos/'+this.pedido_id, datos)
+         .toPromise()
+         .then(
+           data => { // Success
+              console.log(data);
+              this.data = data;
+
+              for (var i = 0; i < this.productList2.length; ++i) {
+                //Si hay pedidos hoy
+                if (this.productList) {
+                  if (this.productList[i].id == this.pedido_id) {
+                     this.productList[i].vendedor_id = this.vendedor_sel.id;
+                     this.productList[i].vendedor = this.vendedor_sel;
+                  }
+                }
+                
+
+                if (this.productList2[i].id == this.pedido_id) {
+                   this.productList2[i].vendedor_id = this.vendedor_sel.id;
+                   this.productList2[i].vendedor = this.vendedor_sel;
+                }
+              }
+
+              //Si hay pedidos hoy
+              if (this.productList) {
+                this.filteredItems = this.productList;
+                this.init();
+              }
+
+              this.filteredItems2 = this.productList2;
+              this.init2();
+              
+              this.clearVendedores();
+
+              this.loading = false;
+
+              this.alerta_tipo = 'success';
+              this.alerta_msg = this.data.message;
+              this.alerta = true;
+              setTimeout(()=>{this.alerta = false;},4000); 
+           },
+           msg => { // Error
+             console.log(msg);
+             console.log(msg.error.error);
+
+             this.loading = false;
+
+             //token invalido/ausente o token expiro
+             if(msg.status == 400 || msg.status == 401){ 
+                  //alert(msg.error.error);
+                  //ir a login
+
+                  this.alerta_tipo = 'warning';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta_boton = true;
+                  this.mostrar = false;
+              }
+              else { 
+                  //alert(msg.error.error);
+
+                  this.alerta_tipo = 'danger';
+                  this.alerta_msg = msg.error.error;
+                  this.alerta = true;
+                  setTimeout(()=>{this.alerta = false;},4000);
+              }
+           }
+         );
+    }
   
 }

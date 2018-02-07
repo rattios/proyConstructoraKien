@@ -1,96 +1,3 @@
-<!--Modal automatica:
- <button type="button" class="btn btn-primary" (click)="showModal()">Render auto-shown modal</button>-->
-<div *ngIf="isModalShown" [config]="{ show: true, ignoreBackdropClick: true, keyboard: false }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title pull-left">Productos de la categoría {{habCategoria.nombre}}</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal(); apagarSwiche()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="card-header">
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group" style="text-align: right; margin-top: 7px;">
-                         <strong>Buscar: </strong>
-                         <input  type="text"  id="inputName2" [(ngModel)]="inputName2" (ngModelChange)="FilterByName2()"/>
-                         <!-- <button type="button" class="btn btn-primary" (click)="FilterByName()">Aplicar</button> -->
-                        </div>
-                      </div>
-                    </div>
-                    
-                  </div>
-                  <div class="card-body ">
-                    <table class="table table-striped">
-                      <thead>
-                         <th></th>
-                         <!-- <th style="text-align: center;">ID</th> -->
-                         <th style="text-align: center;">Imagen</th>
-                         <th style="text-align: center;">Nombre</th>
-                         <th style="text-align: center;">Costo</th>
-                         <!-- <th style="text-align: center;">Cantidad</th> -->
-                         <th style="text-align: center;">Unidad</th>
-                         <th style="text-align: center;">Estado</th>
-                         
-                      </thead>
-                      <tbody>
-                         <tr *ngFor="let item of items2" >
-                            <td></td>
-                            <!-- <td style="text-align: center; vertical-align:middle;">{{item.id}}</td> -->
-                            <td style="text-align: center; vertical-align:middle;"><img src = "{{item.imagen}}" alt="" height="auto" width="60px"></td> 
-                            <td style="text-align: center; vertical-align:middle;">{{item.nombre}}</td>
-                            <td style="text-align: center; vertical-align:middle;">{{item.costo}}</td>
-                            <!-- <td style="text-align: center; vertical-align:middle;">{{item.cantidad}}</td> -->
-                            <td style="text-align: center; vertical-align:middle;">{{item.unidad}}</td>
-                            <td style="text-align: center; vertical-align:middle;">
-                              <label class="switch switch-text switch-pill switch-primary">
-                                <input  [checked]="item.estado === 'ON'" type="checkbox" class="switch-input" (change)="cambioSwicheProd(item)" >
-                                <span class="switch-label" data-on="On" data-off="Off"></span>
-                                <span class="switch-handle"></span>
-                              </label>
-                            </td>
-                            
-                         </tr>
-                      </tbody>
-                    </table>
-                      <div class="btn-toolbar" role="toolbar" style="margin: 0;">
-                        <div class="btn-group">
-                           <label style="margin-top:10px">Página {{currentIndex2}}/{{pageNumber2}} </label>
-                        </div>
-                        <div class="btn-group pull-right">
-                           <ul class="pagination" >
-                              <li [ngClass]="{'disabled': (currentIndex2 == 1 || pageNumber2 == 0)}" ><a  (click)="prevPage2()" >Atrás</a></li>
-                                 <li *ngFor="let page of pagesIndex2"  [ngClass]="{'active': (currentIndex2 == page)}">
-                                    <a (click)="setPage(page)"  >{{page}} </a>
-                                 </li>
-                              <li [ngClass]="{'disabled': (currentIndex2 == pageNumber2 || pageNumber2 == 0)}" ><a   (click)="nextPage2()" >Siguiente</a></li>
-                           </ul>
-                        </div>
-                      </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn4 btn-secondary" (click)="hideModal(); apagarSwiche()">Cancelar</button>
-        <button type="button" class="btn btn-danger" (click)="hideModal(); habilitarCat()"><i class="fa fa-check"></i>&nbsp; Habilitar</button>
-      </div>
-    </div>
-  </div>
-</div> 
-
 <!-- <alert type="success" dismissible="true">
   <strong>Well done!</strong> You successfully read this important alert message.
 </alert>
@@ -171,13 +78,11 @@
                       <td style="text-align: center; vertical-align:middle;">{{item.telefono}}</td>
                       <td style="text-align: center; vertical-align:middle;">{{item.correo}}</td>
                       <td style="text-align: center; vertical-align:middle;">
-                        <div *ngIf="mostrarSwiches">
                         <label class="switch switch-text switch-pill switch-primary">
-                          <input [disabled]="admin" [checked]="item.estado === 'ON'" type="checkbox" class="switch-input" (change)="cambioSwicheCat(item)" >
+                          <input [disabled]="admin" [checked]="item.estado === 'ON'" type="checkbox" class="switch-input" (change)="cambiarEstado(item)" >
                           <span class="switch-label" data-on="On" data-off="Off"></span>
                           <span class="switch-handle"></span>
                         </label>
-                        </div>
                       </td> 
                       <td *ngxPermissionsOnly="['SUPER']" style="text-align: center; vertical-align:middle;">
                         <button type="button" class="btn btn2 btn-primary" (click)="aEditar(item)"><i class="fa fa-edit"></i>&nbsp; Editar</button>

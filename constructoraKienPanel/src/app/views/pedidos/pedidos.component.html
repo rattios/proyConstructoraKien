@@ -1,3 +1,38 @@
+<!--Modal automatica:
+ <button type="button" class="btn btn-primary" (click)="showModal()">Render auto-shown modal</button>-->
+<div *ngIf="isModalShown" [config]="{ show: true, ignoreBackdropClick: true, keyboard: false }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Vendedores disponibles</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal(); clearVendedores()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="form-group row">
+              <!-- <label class="col-md-3 form-control-label" for="multiple-select">Multiple select</label> -->
+              <div class="col-md-12" style="height:200px; overflow-y: scroll;">
+                  <div *ngFor="let item of vendedores" class="form-control" >
+                    <div class="radio">
+                      <label for="{{item.id}}">
+                        <input type="radio" id="{{item.id}}" name="radios" value="{{item.id}}" (click)="setVendedor(item)">  {{item.nombre}} {{item.apellido}}
+                      </label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn4 btn-secondary" (click)="hideModal(); clearVendedores()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="hideModal(); asignarVendedor()" [disabled]="!vendedor_sel"><i class="fa fa-check"></i>&nbsp; Asignar</button>
+      </div>
+    </div>
+  </div>
+</div> 
+
 <!-- <div id='content' #content>
   <h1>the title</h1>
   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dicta voluptates, dolores saepe iste repellendus odio quae, nesciunt quidem rerum delectus veniam et cum asperiores aliquam minima eveniet officia illo blanditiis!</p>
@@ -92,6 +127,7 @@
                              <!-- <th style="text-align: center;">ID</th> -->
                              <th style="text-align: center;">Usuario</th>
                              <th style="text-align: center;">Hora</th>
+                             <th style="text-align: center;">Vendedor</th>
                              <th style="text-align: center;">Acciones</th>
                           </thead>
                           <tbody>
@@ -100,8 +136,11 @@
                                 <!-- <td style="text-align: center; vertical-align:middle;">{{item.id}}</td> -->
                                 <td style="text-align: center; vertical-align:middle;">{{item.usuario.nombre}}</td>
                                 <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'hh:mm:ss'}} -->{{item.hora}}</td>
+                                <td *ngIf="item.vendedor" style="text-align: center; vertical-align:middle;">{{item.vendedor.nombre}}</td>
+                                <td *ngIf="!item.vendedor" style="text-align: center; vertical-align:middle;"></td>
                                 <td style="text-align: center; vertical-align:middle;">
                                   <button type="button" class="btn btn2 btn-primary" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
+                                  <button type="button" class="btn btn2 btn-primary" title="Asignar vendedor" (click)="cargarVendedores(item.id)"><i class="fa fa-paperclip"></i>&nbsp; Vendedor</button>
                                 </td>
                              </tr>
                           </tbody>
@@ -172,6 +211,7 @@
                              <th style="text-align: center;">Usuario</th>
                              <th style="text-align: center;">Fecha</th>
                              <th style="text-align: center;">Hora</th>
+                             <th style="text-align: center;">Vendedor</th>
                              <th style="text-align: center;">Acciones</th>
                           </thead>
                           <tbody>
@@ -181,8 +221,11 @@
                                 <td style="text-align: center; vertical-align:middle;">{{item.usuario.nombre}}</td>
                                 <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'dd/MM/yyyy'}} -->{{item.fecha}}</td>
                                 <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'hh:mm:ss'}} -->{{item.hora}}</td>
+                                <td *ngIf="item.vendedor" style="text-align: center; vertical-align:middle;">{{item.vendedor.nombre}}</td>
+                                <td *ngIf="!item.vendedor" style="text-align: center; vertical-align:middle;"></td>
                                 <td style="text-align: center; vertical-align:middle;">
                                   <button type="button" class="btn btn2 btn-primary" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
+                                  <button type="button" class="btn btn2 btn-primary" title="Asignar vendedor" (click)="cargarVendedores(item.id)"><i class="fa fa-paperclip"></i>&nbsp; Vendedor</button>
                                 </td>
                              </tr>
                           </tbody>
@@ -228,6 +271,40 @@
         </div>
         <div class="card-body">
             <div class="row">
+
+            <div *ngIf="selectedObj.vendedor" class="col-md-12">
+              <div class="card card-accent-warning">
+                <div class="card-header">
+                  <strong><i class="icon-user"></i> Vendedor</strong>
+                </div>
+                <div class="card-body">
+                  <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="form-group row grupos" >
+                      <label class="col-md-3 form-control-label etiquetas">Nombre</label>
+                      <div class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.nombre}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.vendedor.apellido" class="col-md-3 form-control-label etiquetas">Apellido</label>
+                      <div *ngIf="selectedObj.vendedor.apellido" class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.apellido}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.vendedor.telefono" class="col-md-3 form-control-label etiquetas">Teléfono</label>
+                      <div *ngIf="selectedObj.vendedor.telefono" class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.telefono}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.vendedor.correo" class="col-md-3 form-control-label etiquetas">Correo</label>
+                      <div *ngIf="selectedObj.vendedor.correo" class="col-md-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.correo}}</p>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div><!--/.col-->
+
             <div class="col-md-12">
               <div class="card card-accent-primary">
                 <div class="card-header">
@@ -364,6 +441,40 @@
         </div>
         <div class="card-body">
             <div class="row">
+
+            <div *ngIf="selectedObj.vendedor" class="col-sm-12">
+              <div class="card card-accent-warning">
+                <div class="card-header">
+                  <strong><i class="icon-user"></i> Vendedor</strong>
+                </div>
+                <div class="card-body">
+                  <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="form-group row grupos" >
+                      <label class="col-sm-3 form-control-label etiquetas">Nombre</label>
+                      <div class="col-sm-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.nombre}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.vendedor.apellido" class="col-sm-3 form-control-label etiquetas">Apellido</label>
+                      <div *ngIf="selectedObj.vendedor.apellido" class="col-sm-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.apellido}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.vendedor.telefono" class="col-sm-3 form-control-label etiquetas">Teléfono</label>
+                      <div *ngIf="selectedObj.vendedor.telefono" class="col-sm-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.telefono}}</p>
+                      </div>
+
+                      <label *ngIf="selectedObj.vendedor.correo" class="col-sm-3 form-control-label etiquetas">Correo</label>
+                      <div *ngIf="selectedObj.vendedor.correo" class="col-sm-9">
+                        <p class="form-control-static">{{selectedObj.vendedor.correo}}</p>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div><!--/.col-->
+
             <div class="col-sm-12">
               <div class="card card-accent-primary">
                 <div class="card-header">

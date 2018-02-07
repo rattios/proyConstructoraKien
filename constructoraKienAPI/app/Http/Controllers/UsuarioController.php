@@ -37,7 +37,7 @@ class UsuarioController extends Controller
             $query->where(DB::raw('DAY(created_at)'),DB::raw('DAY(now())'))
             ->where(DB::raw('MONTH(created_at)'),DB::raw('MONTH(now())'))
             ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
-            ->with('productos')->orderBy('id', 'desc');
+            ->with('productos')->with('vendedor')->orderBy('id', 'desc');
         }])->get();
 
         if(count($usuarios) == 0){

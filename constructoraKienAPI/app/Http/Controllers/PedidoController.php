@@ -30,7 +30,7 @@ class PedidoController extends Controller
     public function pedidosHoyAnio()
     {
         //cargar todos los pedidos de hoy
-        $pedidosHoy = \App\Pedido::with('usuario')->with('productos')
+        $pedidosHoy = \App\Pedido::with('usuario')->with('productos')->with('vendedor')
             ->where(DB::raw('DAY(created_at)'),DB::raw('DAY(now())'))
             ->where(DB::raw('MONTH(created_at)'),DB::raw('MONTH(now())'))
             ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
@@ -43,7 +43,7 @@ class PedidoController extends Controller
         //Si estamos en enero cargo tambien los pedidos de diciembre
         if($mes_actual == 1){
             //cargar todos los pedidos del año en curso con los de diciembre
-            $pedidosAnio = \App\Pedido::with('usuario')->with('productos')
+            $pedidosAnio = \App\Pedido::with('usuario')->with('productos')->with('vendedor')
                 ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
                 ->orWhere(function ($query) {
                     $query->where(DB::raw('MONTH(created_at)'),12)
@@ -52,7 +52,7 @@ class PedidoController extends Controller
                 ->orderBy('id', 'desc')->get();
         }else{
             //cargar todos los pedidos del año en curso
-            $pedidosAnio = \App\Pedido::with('usuario')->with('productos')
+            $pedidosAnio = \App\Pedido::with('usuario')->with('productos')->with('vendedor')
                 ->where(DB::raw('YEAR(created_at)'),DB::raw('YEAR(now())'))
                 ->orderBy('id', 'desc')->get();
         }
@@ -288,7 +288,7 @@ class PedidoController extends Controller
         {
             // Almacenamos en la base de datos el registro.
             if ($pedido->save()) {
-                return response()->json(['status'=>'ok','pedido'=>$pedido], 200);
+                return response()->json(['pedido'=>$pedido , 'message'=>'Pedido actualizado con éxito.'], 200);
             }else{
                 return response()->json(['error'=>'Error al actualizar el pedido.'], 500);
             }
@@ -298,7 +298,7 @@ class PedidoController extends Controller
         {
             // Se devuelve un array errors con los errores encontrados y cabecera HTTP 304 Not Modified – [No Modificada] Usado cuando el cacheo de encabezados HTTP está activo
             // Este código 304 no devuelve ningún body, así que si quisiéramos que se mostrara el mensaje usaríamos un código 200 en su lugar.
-            return response()->json(['error'=>'No se ha modificado ningún dato al pedido.'],304);
+            return response()->json(['error'=>'No se ha modificado ningún dato al pedido.'],309);
         }
     }
 
