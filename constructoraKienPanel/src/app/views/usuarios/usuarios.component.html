@@ -212,23 +212,8 @@
                       <div class="form-group row grupos" >
                         <label class="col-md-3 form-control-label etiquetas">Nombre</label>
                         <div class="col-md-9">
-                          <p class="form-control-static">{{pedido.vendedor.nombre}}</p>
-                        </div>
-
-                        <label *ngIf="pedido.vendedor.apellido" class="col-md-3 form-control-label etiquetas">Apellido</label>
-                        <div *ngIf="pedido.vendedor.apellido" class="col-md-9">
-                          <p class="form-control-static">{{pedido.vendedor.apellido}}</p>
-                        </div>
-
-                        <label *ngIf="pedido.vendedor.telefono" class="col-md-3 form-control-label etiquetas">Teléfono</label>
-                        <div *ngIf="pedido.vendedor.telefono" class="col-md-9">
-                          <p class="form-control-static">{{pedido.vendedor.telefono}}</p>
-                        </div>
-
-                        <label *ngIf="pedido.vendedor.correo" class="col-md-3 form-control-label etiquetas">Correo</label>
-                        <div *ngIf="pedido.vendedor.correo" class="col-md-9">
-                          <p class="form-control-static">{{pedido.vendedor.correo}}</p>
-                        </div>
+                          <p class="form-control-static">{{pedido.vendedor.nombre}} {{pedido.vendedor.apellido}}</p>
+                        </div> 
                       </div>
                     </form>
                   </div>

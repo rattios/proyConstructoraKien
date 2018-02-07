@@ -87,6 +87,7 @@ export class PedidosComponent {
 
   @ViewChild('content') public content:ElementRef;
 
+  //No esta en uso
   public downloadPDF(){
 
     let doc = new jsPDF();
@@ -107,6 +108,7 @@ export class PedidosComponent {
     doc.save('test.pdf');
   }
 
+  //No esta en uso
   public downloadPDF2(){
 
    /*html2canvas(this.content.nativeElement, <Html2Canvas.Html2CanvasOptions>{
@@ -155,6 +157,17 @@ export class PedidosComponent {
         doc.addImage(imgData, 'PNG', 10, 1);
         doc.save('pedido.pdf');
     });
+  }
+
+  expotToPDF(): void{
+    if(!this.selectedObj.vendedor){
+      this.alerta_tipo = 'warning';
+      this.alerta_msg = 'Debes asignar un vendedor para exportar el pedido.';
+      this.alerta = true;
+      setTimeout(()=>{this.alerta = false;},4000);
+    }else{
+      this.print();
+    }
   }
 
   print(): void {

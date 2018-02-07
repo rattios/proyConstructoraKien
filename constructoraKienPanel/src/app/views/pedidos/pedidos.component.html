@@ -136,7 +136,7 @@
                                 <!-- <td style="text-align: center; vertical-align:middle;">{{item.id}}</td> -->
                                 <td style="text-align: center; vertical-align:middle;">{{item.usuario.nombre}}</td>
                                 <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'hh:mm:ss'}} -->{{item.hora}}</td>
-                                <td *ngIf="item.vendedor" style="text-align: center; vertical-align:middle;">{{item.vendedor.nombre}}</td>
+                                <td *ngIf="item.vendedor" style="text-align: center; vertical-align:middle;">{{item.vendedor.nombre}} {{item.vendedor.apellido}}</td>
                                 <td *ngIf="!item.vendedor" style="text-align: center; vertical-align:middle;"></td>
                                 <td style="text-align: center; vertical-align:middle;">
                                   <button type="button" class="btn btn2 btn-primary" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
@@ -221,7 +221,7 @@
                                 <td style="text-align: center; vertical-align:middle;">{{item.usuario.nombre}}</td>
                                 <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'dd/MM/yyyy'}} -->{{item.fecha}}</td>
                                 <td style="text-align: center; vertical-align:middle;"><!-- {{item.created_at | date:'hh:mm:ss'}} -->{{item.hora}}</td>
-                                <td *ngIf="item.vendedor" style="text-align: center; vertical-align:middle;">{{item.vendedor.nombre}}</td>
+                                <td *ngIf="item.vendedor" style="text-align: center; vertical-align:middle;">{{item.vendedor.nombre}} {{item.vendedor.apellido}}</td>
                                 <td *ngIf="!item.vendedor" style="text-align: center; vertical-align:middle;"></td>
                                 <td style="text-align: center; vertical-align:middle;">
                                   <button type="button" class="btn btn2 btn-primary" (click)="ver(item)"><i class="fa fa-eye"></i>&nbsp; Ver</button>
@@ -282,22 +282,7 @@
                     <div class="form-group row grupos" >
                       <label class="col-md-3 form-control-label etiquetas">Nombre</label>
                       <div class="col-md-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.nombre}}</p>
-                      </div>
-
-                      <label *ngIf="selectedObj.vendedor.apellido" class="col-md-3 form-control-label etiquetas">Apellido</label>
-                      <div *ngIf="selectedObj.vendedor.apellido" class="col-md-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.apellido}}</p>
-                      </div>
-
-                      <label *ngIf="selectedObj.vendedor.telefono" class="col-md-3 form-control-label etiquetas">Teléfono</label>
-                      <div *ngIf="selectedObj.vendedor.telefono" class="col-md-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.telefono}}</p>
-                      </div>
-
-                      <label *ngIf="selectedObj.vendedor.correo" class="col-md-3 form-control-label etiquetas">Correo</label>
-                      <div *ngIf="selectedObj.vendedor.correo" class="col-md-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.correo}}</p>
+                        <p class="form-control-static">{{selectedObj.vendedor.nombre}} {{selectedObj.vendedor.apellido}}</p>
                       </div>
                     </div>
                   </form>
@@ -421,7 +406,7 @@
         <div class="card-footer">
           <button  class="btn btn4 btn-sm btn-secondary" (click)="atras()"><i class="fa fa-arrow-left"></i> Atrás</button>
           <button  class="btn btn-danger btn-sm btn-secondary pull-right" (click)="myModal.show(); aEliminar()"><i class="fa fa-trash"></i>&nbsp; Eliminar</button>
-          <button  class="btn btn4 btn-sm btn-secondary pull-right" style="margin-right:15px;" (click)="print()"><i class="fa fa-file-pdf-o"></i>&nbsp; Exportar a PDF</button>
+          <button  class="btn btn4 btn-sm btn-secondary pull-right" style="margin-right:15px;" (click)="expotToPDF()"><i class="fa fa-file-pdf-o"></i>&nbsp; Exportar a PDF</button>
         </div>
       </div>
     </div>
@@ -452,22 +437,7 @@
                     <div class="form-group row grupos" >
                       <label class="col-sm-3 form-control-label etiquetas">Nombre</label>
                       <div class="col-sm-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.nombre}}</p>
-                      </div>
-
-                      <label *ngIf="selectedObj.vendedor.apellido" class="col-sm-3 form-control-label etiquetas">Apellido</label>
-                      <div *ngIf="selectedObj.vendedor.apellido" class="col-sm-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.apellido}}</p>
-                      </div>
-
-                      <label *ngIf="selectedObj.vendedor.telefono" class="col-sm-3 form-control-label etiquetas">Teléfono</label>
-                      <div *ngIf="selectedObj.vendedor.telefono" class="col-sm-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.telefono}}</p>
-                      </div>
-
-                      <label *ngIf="selectedObj.vendedor.correo" class="col-sm-3 form-control-label etiquetas">Correo</label>
-                      <div *ngIf="selectedObj.vendedor.correo" class="col-sm-9">
-                        <p class="form-control-static">{{selectedObj.vendedor.correo}}</p>
+                        <p class="form-control-static">{{selectedObj.vendedor.nombre}} {{selectedObj.vendedor.apellido}}</p>
                       </div>
                     </div>
                   </form>
