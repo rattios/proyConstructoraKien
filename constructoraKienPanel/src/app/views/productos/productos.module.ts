@@ -42,7 +42,8 @@ import { NgxPermissionsModule } from 'ngx-permissions';
         backdropBorderRadius: '8px',
         primaryColour: '#ffffff', 
         secondaryColour: '#ffffff', 
-        tertiaryColour: '#ffffff'
+        tertiaryColour: '#ffffff',
+        fullScreenBackdrop: true
     })
   ],
   declarations: [ ProductosComponent ]

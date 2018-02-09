@@ -1,3 +1,12 @@
+.logo-header{
+width: 60px;
+margin: 10px;
+float: left;
+}
+.title-header{
+display: inline-block;
+}
+
 .btn { 
 	background-color: #c71717 !important;
 	border: 1px solid  #c71717 !important;

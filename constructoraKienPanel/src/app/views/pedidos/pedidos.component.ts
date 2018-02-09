@@ -1038,13 +1038,19 @@ export class PedidosComponent {
               console.log(data);
               this.data = data;
 
+              console.log(this.productList);
+              console.log(this.productList2);
+
               for (var i = 0; i < this.productList2.length; ++i) {
                 //Si hay pedidos hoy
                 if (this.productList) {
-                  if (this.productList[i].id == this.pedido_id) {
-                     this.productList[i].vendedor_id = this.vendedor_sel.id;
-                     this.productList[i].vendedor = this.vendedor_sel;
+                  if (i < this.productList.length) {
+                    if (this.productList[i].id == this.pedido_id) {
+                       this.productList[i].vendedor_id = this.vendedor_sel.id;
+                       this.productList[i].vendedor = this.vendedor_sel;
+                    }
                   }
+                  
                 }
                 
 
