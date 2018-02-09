@@ -418,38 +418,31 @@
   <div class="row">
     <div class="col-sm-12">
       <div>
-        <img src="http://constructorakien.internow.com.mx/logokien.png" alt="kien" style="width: 60px; margin:10px; float: left;">
-        <h2 style="width: 60px; margin:10px; float: left;">CONSTRUCTORA KIEN</h2>
+        <img src="http://constructorakien.internow.com.mx/logokien.png" alt="kien" style="width: 60px; margin-right:15px; float: left;">
+        <h3 style="display: inline-block;margin-top:10px;">CONSTRUCTORA KIEN</h3>
         <hr>
       </div>
-
-      <!-- <div>
-        <img src="http://constructorakien.internow.com.mx/logokien.png" alt="kien" class="logo-header">
-        <h2 class="title-header">CONSTRUCTORA KIEN</h2>
-        <hr>
-      </div> -->
     </div>
   </div>
 
   <div class="row">
     <div class="col-sm-12">
-      <div class="card">
-        <div class="card-header">
-          <strong>Detalles del Pedido:</strong>
-          <div class="pull-right" style="margin-right: 50px">
+      <div>
+        <div>
+          <div class="pull-right" style="text-align: right;">
             <strong>Fecha: {{selectedObj.created_at | date:'dd/MM/yyyy'}}</strong>
             <strong>- Hora: {{selectedObj.created_at | date:'HH:mm:ss'}}</strong>
           </div>
         </div>
-        <div class="card-body">
+        <div>
             <div class="row">
-
             <div *ngIf="selectedObj.vendedor" class="col-sm-12">
-              <div class="card card-accent-warning">
-                <div class="card-header">
+              <div>
+                <div>
                   <strong><i class="icon-user"></i> Vendedor</strong>
                 </div>
-                <div class="card-body">
+                <hr style="margin: 5px 0px">
+                <div>
                   <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                     <div class="form-group row grupos" >
                       <label class="col-sm-3 form-control-label etiquetas">Nombre</label>
@@ -463,11 +456,12 @@
             </div><!--/.col-->
 
             <div class="col-sm-12">
-              <div class="card card-accent-primary">
-                <div class="card-header">
+              <div>
+                <div>
                   <strong><i class="icon-user"></i> Usuario</strong>
                 </div>
-                <div class="card-body">
+                <hr style="margin: 5px 0px">
+                <div>
                   <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                     <div class="form-group row grupos" >
                       <label class="col-sm-3 form-control-label etiquetas">User</label>
@@ -495,11 +489,12 @@
             </div><!--/.col-->
             
             <div class="col-sm-12">
-              <div class="card card-accent-success">
-                <div class="card-header">
+              <div>
+                <div>
                   <strong><i class="icon-direction"></i>  Referencias</strong>
                 </div>
-                <div class="card-body">
+                <hr style="margin: 5px 0px">
+                <div>
                   <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                     <div class="form-group row grupos">
                       <label class="col-sm-3 form-control-label etiquetas">Dirección</label>
@@ -568,7 +563,7 @@
                   </table>
                 </div>
                 <div class="card-footer">
-                  <div class="pull-right" style="margin-right: 50px; float:right"><strong>Total: $ {{selectedObj.total}} MXN</strong></div>
+                  <div class="pull-right" style="margin-right: 30px; float:right"><strong>Total: $ {{selectedObj.total}} MXN</strong></div>
                 </div>
               </div>
             </div><!--/.col-->

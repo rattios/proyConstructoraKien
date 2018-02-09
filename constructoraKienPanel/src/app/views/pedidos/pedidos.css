@@ -72,5 +72,29 @@ display: inline-block;
 .etiquetas {
     font-weight: bold;
 }
+.card-header{
+	padding: 5px 1.25rem !important;
+}
+.card-body{
+	padding: 15px;
+}
+.form-group, .form-control-static{
+	margin-bottom: 0px;
+	line-height: 25px;
+}
 
-
+@media print {
+    .card-header{
+		padding: 0px 1.25rem !important;
+	}
+	.card-body{
+		padding: 5px;
+	}
+	.form-group, .form-control-static{
+		margin-bottom: 0px;
+		line-height: 2px;
+	}
+	#print-section{
+		-webkit-print-color-adjust: exact;
+	} 
+}
