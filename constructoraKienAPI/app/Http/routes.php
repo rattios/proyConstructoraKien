@@ -44,7 +44,7 @@ Route::group(  ['middleware' =>'cors'], function(){
     Route::post('/usuarios','UsuarioController@store'); //Crea admis para el panel
 
 
-        
+    Route::get('/productos/buscar/codigos','ProductoController@buscarCodigos');
 
     Route::group(['middleware' => 'jwt-auth'], function(){
 

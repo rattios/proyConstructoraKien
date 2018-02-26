@@ -103,6 +103,31 @@ class ProductoController extends Controller
             $estado_producto = 'OFF';
         }
 
+        //Generar código alatorio
+        $salt = 'abcdefghijklmnopqrstuvwxyz1234567890';
+
+        $true = true;
+        while ($true) {
+            $rand = '';
+            $i = 0;
+            $length = 10;
+
+            while ($i < $length) {
+                //Loop hasta que el string aleatorio contenga la longitud ingresada.
+                $num = rand() % strlen($salt);
+                $tmp = substr($salt, $num, 1);
+                $rand = $rand . $tmp;
+                $i++;
+            }
+
+            $codigo = $rand;
+
+            $auxProd = \App\Producto::where('codigo', $codigo)->get();
+            if(count($auxProd)==0){
+               $true = false; //romper el bucle
+            }
+        }
+
         //Creamos el producto asociado a la categoria
         //$producto = $categoria->productos()->create($request->all());
         $producto = $categoria->productos()->create(['nombre' => $request->input('nombre'),
@@ -110,7 +135,9 @@ class ProductoController extends Controller
             'imagen' => $request->input('imagen'),
             'costo' => $request->input('costo'),
             'cantidad' => $request->input('cantidad'),
-            'unidad' => $request->input('unidad')]);
+            'unidad' => $request->input('unidad'),
+            'codigo' => $codigo
+        ]);
 
         //Cargar la categoria antes de enviar el producto creado
         $producto->categoria = $producto->categoria;
@@ -297,4 +324,31 @@ class ProductoController extends Controller
 
         return response()->json(['status'=>'ok', 'message'=>'Se ha eliminado correctamente el producto.'], 200);
     }
+
+    public function buscarCodigos(Request $request)
+    {
+        // Primero comprobaremos si estamos recibiendo todos los campos obligatorios.
+        if (!$request->input('codigos'))
+        {
+            // Se devuelve un array errors con los errores encontrados y cabecera HTTP 422 Unprocessable Entity – [Entidad improcesable] Utilizada para errores de validación.
+            return response()->json(['error'=>'Falta el parametro codigos.'],422);
+        }
+
+        $codigos = json_decode($request->input('codigos'));
+
+        $productos = [];
+
+        for ($i=0; $i < count($codigos) ; $i++) { 
+            $prod = \App\Producto::where('codigo', $codigos[$i]->codigo)
+                ->where('estado', 'ON')->with('categoria')->get();
+            if(count($prod) != 0){
+               array_push($productos, $prod[0]);
+            }   
+        }    
+
+        
+        return response()->json(['productos'=>$productos], 200);
+        
+    }
+
 }

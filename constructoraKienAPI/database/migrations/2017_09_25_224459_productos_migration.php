@@ -20,6 +20,7 @@ class ProductosMigration extends Migration
             $table->float('costo'); //Costo por unidad
             $table->float('cantidad'); //Total de unidades
             $table->string('unidad'); //Kg por ejemplo
+            $table->string('codigo'); //Codigo aleatorio unico
 
             $table->integer('categoria_id')->unsigned();
             $table->foreign('categoria_id')->references('id')->on('categorias');
