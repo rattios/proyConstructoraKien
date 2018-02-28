@@ -1,0 +1,30 @@
+<ion-content>
+	<div class="content-cart">
+		<div class="content_img">
+			<img src="assets/img/logotext.png" alt="constructoraKien">
+		</div>
+		<form #loginForm="ngForm">
+			<ion-list>
+			    <ion-item>
+			      <ion-label> <ion-icon ios="ios-person" md="md-person"></ion-icon></ion-label>
+			      <ion-input clearInput type="text" placeholder="USUARIO" name="user" [(ngModel)]="loginCredentials.user"></ion-input>
+			    </ion-item>
+
+			    <ion-item>
+			      <ion-label><ion-icon ios="ios-lock" md="md-lock"></ion-icon></ion-label>
+			      <ion-input clearInput type="password"  placeholder="CONTRASEÑA" name="password" [(ngModel)]="loginCredentials.password"></ion-input>
+			    </ion-item>
+				<div class="b2-login">
+					<p (click)="olvido_password()">¿Olvidaste Contraseña?</p>
+				</div>
+		  	</ion-list>
+			<div class="center mb-30">
+				<button ion-button class="b1-login" (click)="login()">ENTRAR</button>
+				<button ion-button class="b1-login" (click)="registrar_usuario()">REGÍSTRATE</button>
+			</div>
+			<div class="center">
+				<p class="list-product" *ngIf="showFooter" (click)="listado_productos()"><ion-icon ios="ios-pricetags" md="md-pricetags" class="icon-price"></ion-icon> Lista Precios</p>
+			</div>
+		</form>
+	</div>
+</ion-content>
