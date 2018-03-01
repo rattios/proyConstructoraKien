@@ -29,7 +29,7 @@ return [
     */
 
     //'host' => env('MAIL_HOST', 'smtp.gmail.com'),
-    'host' => env('MAIL_HOST', 'smtp.klein.lineadns.com'),
+    'host' => env('MAIL_HOST', 'internow.com.mx'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,9 +54,9 @@ return [
     | used globally for all e-mails that are sent by your application.
     |
     */
-
+    //add correo
     //'from' => ['address' => 'rattios.tech@gmail.com', 'name' => 'Rattios'],
-    'from' => ['address' => 'info@manappger.internow.com.mx', 'name' => 'manappger'],
+    'from' => ['address' => 'info@constructorakien.internow.com.mx', 'name' => 'Constructora Kien'],
 
     /*
     |--------------------------------------------------------------------------
